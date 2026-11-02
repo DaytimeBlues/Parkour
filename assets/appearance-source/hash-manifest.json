@@ -1,0 +1,154 @@
+{
+  "determinism-dependencies.json": {
+    "bytes": 2556,
+    "sha256": "6d9f192be4acc238ad3241a61bb888af3966b00a4593bad71241307a8777cbd7"
+  },
+  "generate_assets.py": {
+    "bytes": 9098,
+    "sha256": "07a5b62e576d9b1115774ea7502fe25b69b411b1916a218415cdbba56d41e98c"
+  },
+  "loader-report.json": {
+    "bytes": 9803,
+    "sha256": "9c67490c3b1717afd87d4271bd88fa53189494e949b0ea61018f5d00fb617ff7"
+  },
+  "pass-a/avatar-fox.glb": {
+    "bytes": 98544,
+    "sha256": "2d9060b758f1faa8d66ad627cfdd6bd1433030f47a50edccdc858d61a6be8bd0"
+  },
+  "pass-a/avatar-rabbit.glb": {
+    "bytes": 134204,
+    "sha256": "8f822ca2db8241f73046912bff56a161e575652800700935f547cf3a24a7295a"
+  },
+  "pass-a/wings-angel.glb": {
+    "bytes": 29796,
+    "sha256": "76b69ad656dc09781ef0eea540cd4d1e82e60ce2e2a7999855658eac92797bfa"
+  },
+  "pass-a/wings-devil.glb": {
+    "bytes": 29592,
+    "sha256": "5f8c9299ae01d015a9a61a210697140101250433805dc7b56368ca38f920f565"
+  },
+  "pass-a/wings-dragon.glb": {
+    "bytes": 33336,
+    "sha256": "bacf4b168669a5ccad487b2859ca40f99101dba8128feb6e4c31955838a41087"
+  },
+  "pass-a/wings-elephant.glb": {
+    "bytes": 20876,
+    "sha256": "25cf70e7a0369582c906ad617e49eb8e83d5039395b22de317859587dab91fa4"
+  },
+  "pass-a/wings-glow.glb": {
+    "bytes": 33028,
+    "sha256": "9a53da3d32102a3f712f8099c318f8036653a2913d73904dc16e331fc75ccbfc"
+  },
+  "pass-a/wings-parakeet.glb": {
+    "bytes": 37468,
+    "sha256": "94d5b3ad0c0a4a49e3e8131d5037eb56fcbd6f99e4472894375a081ddc24da70"
+  },
+  "previews/avatar-fox-front.png": {
+    "bytes": 170458,
+    "sha256": "d9d0adaf20813fa5da902ebada90a7e6a538bf939b5671b8b3f876b77252f2ae"
+  },
+  "previews/avatar-fox-rear.png": {
+    "bytes": 167037,
+    "sha256": "25f5103c9d93b0aabd6b9305ba3c426ecdf2c938a625ca0d2d41e5224e23281f"
+  },
+  "previews/avatar-rabbit-front.png": {
+    "bytes": 164363,
+    "sha256": "6da020d87d864837a6d44afbb79669394c472747ab9f7f22226db97a50dad964"
+  },
+  "previews/avatar-rabbit-rear.png": {
+    "bytes": 161415,
+    "sha256": "ccab4607f46c8fe31e33f38baada13e5f923a19d5d14133171569e23304ee189"
+  },
+  "previews/avatars-contact-sheet.png": {
+    "bytes": 400423,
+    "sha256": "86ff56dc119ff2007ff9654974508e53d793a693e4c1538123d9ea34f519db5d"
+  },
+  "previews/wings-angel-fold-back.png": {
+    "bytes": 127626,
+    "sha256": "6583bd023b2c3810fee03f9367e7c00cb521fbd6583328513fa71095884de0fa"
+  },
+  "previews/wings-angel-half-quarter.png": {
+    "bytes": 141392,
+    "sha256": "d9072a256196cbb783a40654fbc49a3ca4f764b3f8cfe740307afd8906373160"
+  },
+  "previews/wings-angel-open-front.png": {
+    "bytes": 149441,
+    "sha256": "fcdd93899310106ccfdc81bfb2193fe88e65846fe00fdd830c5febaef9971f1d"
+  },
+  "previews/wings-contact-sheet.png": {
+    "bytes": 1301895,
+    "sha256": "d6bc4a83681b9301e9f7a14b4272eeb79341d92f80458c063932f114715e41aa"
+  },
+  "previews/wings-devil-fold-back.png": {
+    "bytes": 138643,
+    "sha256": "02ab8abe9770784e2757a233208320424c089b784d1d6be0c0a1ef37207406a8"
+  },
+  "previews/wings-devil-half-quarter.png": {
+    "bytes": 147251,
+    "sha256": "d8d57d817c29d6454223df7cb87c3c5dc2abe731b5b26ada6aac257bc99405cf"
+  },
+  "previews/wings-devil-open-front.png": {
+    "bytes": 161837,
+    "sha256": "d7bdf2fe395e256ba4cab7550874be6687d62309a999343db45efa9b58e16da3"
+  },
+  "previews/wings-dragon-fold-back.png": {
+    "bytes": 141900,
+    "sha256": "52f93aab30323d4cbd0fef577b86085b5fb1bd7b67635a2a895e82580d3a44b6"
+  },
+  "previews/wings-dragon-half-quarter.png": {
+    "bytes": 157035,
+    "sha256": "e2e989ad12a70c415577c8edc6605fa8e888f7fdc9d1115e12f2b9b904572a75"
+  },
+  "previews/wings-dragon-open-front.png": {
+    "bytes": 175209,
+    "sha256": "c37cee80ac4e0f6dd16562ab304392733cb73f784fbd5c4b3bded350e12f9fcf"
+  },
+  "previews/wings-elephant-fold-back.png": {
+    "bytes": 132108,
+    "sha256": "f4442ff73625e9ea23e9a9873181356600fe68a00c6ab833063f94ee3606ca5b"
+  },
+  "previews/wings-elephant-half-quarter.png": {
+    "bytes": 134193,
+    "sha256": "32f75ea32c49541fdb1658afffcb1b4b6ff498a6930363e70750d9e3a581adbc"
+  },
+  "previews/wings-elephant-open-front.png": {
+    "bytes": 144906,
+    "sha256": "1cb2b9d1ae6164e243a83ac0f38cad0503a9a3b58fa2785fd024b87301630850"
+  },
+  "previews/wings-glow-fold-back.png": {
+    "bytes": 128612,
+    "sha256": "55bd90072ef4364e26696b66ba5b9cd9e86e44ef3c5a3a75f7fbeed9c3c62d53"
+  },
+  "previews/wings-glow-half-quarter.png": {
+    "bytes": 141347,
+    "sha256": "0181cc9c835544b6c0d37371d60bd806841af9e84071c257017853c6a71d06f2"
+  },
+  "previews/wings-glow-open-front.png": {
+    "bytes": 151310,
+    "sha256": "6a41ab230c2fabd2a04243900a374a44a2af3ac369045f9ea120e630b762f10c"
+  },
+  "previews/wings-parakeet-fold-back.png": {
+    "bytes": 131305,
+    "sha256": "253393abf30906d4a8cd1b162238c9641854c8f4b117fd8739cc72670dea8108"
+  },
+  "previews/wings-parakeet-half-quarter.png": {
+    "bytes": 145797,
+    "sha256": "9a8cc5135d6e180177b0c70b432d62db4c477d01d3d52e8ff7c40802053e2a3f"
+  },
+  "previews/wings-parakeet-open-front.png": {
+    "bytes": 155292,
+    "sha256": "59d6a256129d07bc51d5de2813a775c18ff3b1685ce6e0b338b91b6cc4fd00b2"
+  },
+  "render_previews.py": {
+    "bytes": 1872,
+    "sha256": "8e0c4ec61531b7640788db94f209736bb89c6a593b15a8ecd74879aad3ce2488"
+  },
+  "validate_loader.mjs": {
+    "bytes": 2323,
+    "sha256": "a0f909491a5597282e773035c0223d6acf1f04061c8bb2976fca7f691d1c1f70"
+  },
+  "ASSET-CONTRACT.md": {
+    "bytes": 5600,
+    "sha256": "cd7bfcc701842b3768fcee723f40784c966116b7ab92db745c36b91a4aef2174"
+  }
+}

@@ -1,0 +1,8 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import R from '@dimforge/rapier3d-compat';import {platformX} from '../src/simulation/courses.ts';
+test('Rapier grounded rider follows bounded moving platform in fixed steps',async()=>{
+ await R.init();const world=new R.World({x:0,y:-21,z:0});const platform={x:0,y:0,z:0,w:5,d:5,move:{amplitude:1,period:4,phase:0}};
+ const platformBody=world.createRigidBody(R.RigidBodyDesc.kinematicPositionBased().setTranslation(0,-.325,0));world.createCollider(R.ColliderDesc.cuboid(2.5,.325,2.5),platformBody);
+ const body=world.createRigidBody(R.RigidBodyDesc.kinematicPositionBased().setTranslation(0,.94,0));const col=world.createCollider(R.ColliderDesc.capsule(.55,.35),body);const controller=world.createCharacterController(.03);let x=0,vy=0,grounded=false,riding=false,offset=0;
+ for(let i=1;i<=2400;i++){const dt=1/60,prior=body.translation(),next=platformX(platform,i*dt);const support=grounded&&Math.abs(prior.x-x)<2.5-.35*.3&&Math.abs(prior.z)<2.5-.35*.3&&Math.abs(prior.y-(.55+.35+.03))<.18;if(support&&!riding)offset=prior.x-x;riding=support;x=next;platformBody.setNextKinematicTranslation({x:next,y:-.325,z:0});vy-=21*dt;controller.computeColliderMovement(col,{x:riding?x+offset-prior.x:0,y:vy*dt,z:0});const m=controller.computedMovement();body.setNextKinematicTranslation({x:prior.x+m.x,y:prior.y+m.y,z:prior.z+m.z});grounded=controller.computedGrounded();if(grounded&&vy<0)vy=0;world.step();}
+ const q=body.translation();assert.ok(grounded,'remains grounded');assert.ok(Math.abs(q.x-x)<.12,`rider ${q.x} platform ${x}`);assert.ok(Math.abs(q.y-.93)<.05,`height ${q.y}`);world.free();
+});

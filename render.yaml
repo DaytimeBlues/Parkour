@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: parkour-test
+    runtime: node
+    plan: free
+    autoDeployTrigger: 'off'
+    buildCommand: npm ci --include=dev --ignore-scripts && npm run build:render
+    startCommand: npm run start:render
+    healthCheckPath: /healthz
+    envVars:
+      - key: PARKOUR_TEACHERS_JSON
+        sync: false

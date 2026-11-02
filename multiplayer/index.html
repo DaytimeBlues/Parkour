@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#122337">
+  <title>Skybound · Skyfortress</title>
+</head>
+<body>
+  <div id="world" aria-label="Skyfortress game view"></div>
+  <header id="top">
+    <a class="wordmark" href="../">Skybound <span>Skyfortress</span></a>
+    <a id="solo-link" class="top-link" href="../">Solo courses</a>
+    <div id="score" hidden aria-label="Match scores">
+      <span class="red">▲ Red <b id="red-score">0</b></span>
+      <strong id="clock" aria-label="Time remaining">5:00</strong>
+      <span class="blue">■ Blue <b id="blue-score">0</b></span>
+    </div>
+    <button id="menu-button" class="quiet" hidden>Room menu <kbd>Esc</kbd></button>
+  </header>
+
+  <main id="lobby">
+    <section class="intro" aria-labelledby="game-title">
+      <h1 id="game-title">Skyfortress</h1>
+      <p class="game-description">Team parkour. Jump, glide, capture.</p>
+      <div class="game-facts"><span>Two teams</span><span>Five flag zones</span><span>No combat</span></div>
+
+
+    </section>
+
+    <div class="session-area">
+      <section id="entry" class="panel" aria-labelledby="join-title">
+        <h2 id="join-title">Join a room</h2>
+        <p class="panel-intro">Get the code from your teacher.</p>
+        <form id="join-form">
+          <label for="code">Room code</label>
+          <input id="code" required minlength="6" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" aria-describedby="code-help">
+          <span id="code-help" class="field-help">Six letters or numbers</span>
+          <label for="nickname">Nickname</label>
+          <input id="nickname" required maxlength="24" autocomplete="off" placeholder="Choose a nickname" aria-describedby="nickname-help">
+          <span id="nickname-help" class="field-help">Use a nickname, not your full name.</span>
+          <button type="submit">Join room</button>
+        </form>
+        <button id="restore" class="quiet" hidden>Return to saved room</button>
+        <details id="teacher-setup" class="teacher-setup">
+          <summary>Teacher · create a room</summary>
+          <div class="teacher-content">
+            <p id="teacher-signin">Sign in to create and manage a room.<br><a href="/signin-with-chatgpt?return_to=/game/multiplayer/" target="_top">Sign in with ChatGPT</a></p>
+            <div id="teacher-create" hidden>
+              <label for="duration">Match length</label>
+              <select id="duration"><option value="300">5 minutes</option><option value="180">3 minutes</option><option value="600">10 minutes</option></select>
+              <button id="create">Create room</button>
+              <div id="owned-rooms" aria-label="Your recent rooms"></div>
+            </div>
+          </div>
+        </details>
+      <details class="how-to"><summary>How to play</summary><div>
+        <p>Stand in a flag zone with more teammates than opponents. Hold it for five seconds to capture it.</p>
+        <p>Captured zones earn points. The team with the most points when time runs out wins.</p>
+        <dl class="key-guide"><div><dt>WASD / arrows</dt><dd>Move</dd></div><div><dt>Mouse</dt><dd>Look</dd></div><div><dt>Space</dt><dd>Jump · hold to glide</dd></div><div><dt>C</dt><dd>Crouch</dd></div><div><dt>Esc</dt><dd>Room menu</dd></div></dl>
+      </div></details>
+        <p class="appearance-note">Your animal and wings carry over from solo play.</p>
+      </section>
+
+      <section id="room-panel" class="panel" hidden aria-label="Your room">
+        <div class="room-heading"><div><small>Room code</small><strong id="room-code"></strong></div><span id="room-status"></span></div>
+        <p id="room-instructions"></p>
+        <button id="play" hidden>Enter fortress</button>
+        <button id="reconnect" class="quiet" hidden>Reconnect now</button>
+        <div id="teacher-actions" class="actions" hidden>
+          <button data-action="start">Start match</button><button data-action="pause" class="quiet">Pause match</button><button data-action="resume">Resume match</button><button data-action="end" class="quiet danger">End match</button><button id="lock" class="quiet">Lock joining</button>
+        </div>
+        <div class="roster-heading"><h2>Players</h2><span id="player-count"></span></div>
+        <div id="roster" aria-label="Room players"></div>
+        <details class="room-help"><summary>Controls and room help</summary><div><p>WASD or arrows to move. Space to jump; hold to glide. C to crouch. Esc opens this menu.</p><p>Your teacher starts and pauses the match. Leaving this view stops your movement; you can return with your saved seat.</p></div></details>
+        <button id="leave" class="text-button">Leave room view</button>
+      </section>
+      <p id="notice" role="status" aria-live="polite"></p>
+      <p id="graphics-error" role="alert" hidden></p>
+    </div>
+    <footer class="preview-note">Development preview · up to 8 reserved seats per new room. Existing larger rooms keep their seats.</footer>
+  </main>
+
+  <aside id="hud" hidden aria-label="Game information">
+    <div id="zone-list" aria-label="Zone ownership and capture"></div>
+    <div class="radar-wrap"><canvas id="radar" width="240" height="240" aria-label="Radar shows flag zones and teammates only"></canvas><small>Zones &amp; teammates</small></div>
+    <div id="crosshair" aria-hidden="true">+</div>
+    <div class="controls"><span><kbd>WASD</kbd> / <kbd>↑↓←→</kbd> Move</span><span><kbd>Space</kbd> Jump / glide</span><span><kbd>C</kbd> Crouch</span><span><kbd>Esc</kbd> Menu</span></div>
+  </aside>
+  <div id="connection" role="status" aria-live="polite"></div>
+  <script type="module" src="/src/multiplayer/main.ts"></script>
+</body>
+</html>

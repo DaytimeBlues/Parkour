@@ -1,0 +1,515 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "347243dc-f153-4be0-bff2-29ae83bc0ac4",
+  "prevId": "af7179a3-a63f-43c5-9e08-b2abcec7799c",
+  "tables": {
+    "lb_events": {
+      "name": "lb_events",
+      "columns": {
+        "run_id": {
+          "name": "run_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "payload_hash": {
+          "name": "payload_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "accepted_ms": {
+          "name": "accepted_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "receipt_json": {
+          "name": "receipt_json",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "lb_events_run_id_lb_runs_id_fk": {
+          "name": "lb_events_run_id_lb_runs_id_fk",
+          "tableFrom": "lb_events",
+          "tableTo": "lb_runs",
+          "columnsFrom": [
+            "run_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "lb_events_run_id_sequence_pk": {
+          "columns": [
+            "run_id",
+            "sequence"
+          ],
+          "name": "lb_events_run_id_sequence_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "lb_events_seq": {
+          "name": "lb_events_seq",
+          "value": "\"lb_events\".\"sequence\" BETWEEN 1 AND 256"
+        },
+        "lb_events_kind": {
+          "name": "lb_events_kind",
+          "value": "\"lb_events\".\"kind\" IN ('checkpoint','relay','fall','finish','abandon')"
+        }
+      }
+    },
+    "lb_limits": {
+      "name": "lb_limits",
+      "columns": {
+        "bucket": {
+          "name": "bucket",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "count": {
+          "name": "count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_ms": {
+          "name": "expires_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "lb_limits_expiry": {
+          "name": "lb_limits_expiry",
+          "columns": [
+            "expires_ms"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "lb_limits_positive": {
+          "name": "lb_limits_positive",
+          "value": "\"lb_limits\".\"count\">0"
+        }
+      }
+    },
+    "lb_runs": {
+      "name": "lb_runs",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "session_hash": {
+          "name": "session_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "alias": {
+          "name": "alias",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "course_id": {
+          "name": "course_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "rules_version": {
+          "name": "rules_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "start_key": {
+          "name": "start_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "started_ms": {
+          "name": "started_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_ms": {
+          "name": "expires_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'active'"
+        },
+        "last_seq": {
+          "name": "last_seq",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "progress": {
+          "name": "progress",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "falls": {
+          "name": "falls",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "last_event_ms": {
+          "name": "last_event_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "finished_ms": {
+          "name": "finished_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "score_ms": {
+          "name": "score_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "lb_runs_session_start": {
+          "name": "lb_runs_session_start",
+          "columns": [
+            "session_hash",
+            "start_key"
+          ],
+          "isUnique": true
+        },
+        "lb_runs_one_active": {
+          "name": "lb_runs_one_active",
+          "columns": [
+            "session_hash"
+          ],
+          "isUnique": true,
+          "where": "\"lb_runs\".\"status\"='active'"
+        },
+        "lb_runs_board": {
+          "name": "lb_runs_board",
+          "columns": [
+            "course_id",
+            "rules_version",
+            "status",
+            "score_ms",
+            "finished_ms",
+            "id"
+          ],
+          "isUnique": false
+        },
+        "lb_runs_expiry": {
+          "name": "lb_runs_expiry",
+          "columns": [
+            "expires_ms"
+          ],
+          "isUnique": false
+        },
+        "lb_runs_retention": {
+          "name": "lb_runs_retention",
+          "columns": [
+            "started_ms"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "lb_runs_status": {
+          "name": "lb_runs_status",
+          "value": "\"lb_runs\".\"status\" IN ('active','finished','abandoned')"
+        },
+        "lb_runs_seq": {
+          "name": "lb_runs_seq",
+          "value": "\"lb_runs\".\"last_seq\" BETWEEN 0 AND 256"
+        },
+        "lb_runs_progress": {
+          "name": "lb_runs_progress",
+          "value": "\"lb_runs\".\"progress\" BETWEEN 0 AND 6"
+        },
+        "lb_runs_falls": {
+          "name": "lb_runs_falls",
+          "value": "\"lb_runs\".\"falls\" BETWEEN 0 AND 256"
+        }
+      }
+    },
+    "lb_sessions": {
+      "name": "lb_sessions",
+      "columns": {
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "alias": {
+          "name": "alias",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_ms": {
+          "name": "created_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_ms": {
+          "name": "expires_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "lb_sessions_expiry": {
+          "name": "lb_sessions_expiry",
+          "columns": [
+            "expires_ms"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "mp_rooms": {
+      "name": "mp_rooms",
+      "columns": {
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "state_json": {
+          "name": "state_json",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "created_ms": {
+          "name": "created_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_ms": {
+          "name": "expires_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "mp_rooms_owner": {
+          "name": "mp_rooms_owner",
+          "columns": [
+            "owner_id",
+            "expires_ms"
+          ],
+          "isUnique": false
+        },
+        "mp_rooms_expiry": {
+          "name": "mp_rooms_expiry",
+          "columns": [
+            "expires_ms"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "mp_seats": {
+      "name": "mp_seats",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "room_code": {
+          "name": "room_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "state_json": {
+          "name": "state_json",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "mp_seats_room_token": {
+          "name": "mp_seats_room_token",
+          "columns": [
+            "room_code",
+            "token_hash"
+          ],
+          "isUnique": true
+        },
+        "mp_seats_room": {
+          "name": "mp_seats_room",
+          "columns": [
+            "room_code"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "mp_seats_room_code_mp_rooms_code_fk": {
+          "name": "mp_seats_room_code_mp_rooms_code_fk",
+          "tableFrom": "mp_seats",
+          "tableTo": "mp_rooms",
+          "columnsFrom": [
+            "room_code"
+          ],
+          "columnsTo": [
+            "code"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

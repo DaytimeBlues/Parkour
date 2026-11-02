@@ -1,0 +1,102 @@
+{
+  "isolated_pass_comparison": [
+    {
+      "asset": "avatar-fox.glb",
+      "sha256": "2d9060b758f1faa8d66ad627cfdd6bd1433030f47a50edccdc858d61a6be8bd0",
+      "bytes_equal": true
+    },
+    {
+      "asset": "avatar-rabbit.glb",
+      "sha256": "8f822ca2db8241f73046912bff56a161e575652800700935f547cf3a24a7295a",
+      "bytes_equal": true
+    },
+    {
+      "asset": "wings-angel.glb",
+      "sha256": "76b69ad656dc09781ef0eea540cd4d1e82e60ce2e2a7999855658eac92797bfa",
+      "bytes_equal": true
+    },
+    {
+      "asset": "wings-devil.glb",
+      "sha256": "5f8c9299ae01d015a9a61a210697140101250433805dc7b56368ca38f920f565",
+      "bytes_equal": true
+    },
+    {
+      "asset": "wings-dragon.glb",
+      "sha256": "bacf4b168669a5ccad487b2859ca40f99101dba8128feb6e4c31955838a41087",
+      "bytes_equal": true
+    },
+    {
+      "asset": "wings-elephant.glb",
+      "sha256": "25cf70e7a0369582c906ad617e49eb8e83d5039395b22de317859587dab91fa4",
+      "bytes_equal": true
+    },
+    {
+      "asset": "wings-glow.glb",
+      "sha256": "9a53da3d32102a3f712f8099c318f8036653a2913d73904dc16e331fc75ccbfc",
+      "bytes_equal": true
+    },
+    {
+      "asset": "wings-parakeet.glb",
+      "sha256": "94d5b3ad0c0a4a49e3e8131d5037eb56fcbd6f99e4472894375a081ddc24da70",
+      "bytes_equal": true
+    }
+  ],
+  "dependencies": [
+    {
+      "asset": "avatar-fox.glb",
+      "self_contained": true,
+      "images": 0,
+      "external_uris": 0,
+      "extensionsRequired": []
+    },
+    {
+      "asset": "avatar-rabbit.glb",
+      "self_contained": true,
+      "images": 0,
+      "external_uris": 0,
+      "extensionsRequired": []
+    },
+    {
+      "asset": "wings-angel.glb",
+      "self_contained": true,
+      "images": 0,
+      "external_uris": 0,
+      "extensionsRequired": []
+    },
+    {
+      "asset": "wings-devil.glb",
+      "self_contained": true,
+      "images": 0,
+      "external_uris": 0,
+      "extensionsRequired": []
+    },
+    {
+      "asset": "wings-dragon.glb",
+      "self_contained": true,
+      "images": 0,
+      "external_uris": 0,
+      "extensionsRequired": []
+    },
+    {
+      "asset": "wings-elephant.glb",
+      "self_contained": true,
+      "images": 0,
+      "external_uris": 0,
+      "extensionsRequired": []
+    },
+    {
+      "asset": "wings-glow.glb",
+      "self_contained": true,
+      "images": 0,
+      "external_uris": 0,
+      "extensionsRequired": []
+    },
+    {
+      "asset": "wings-parakeet.glb",
+      "self_contained": true,
+      "images": 0,
+      "external_uris": 0,
+      "extensionsRequired": []
+    }
+  ]
+}

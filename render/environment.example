@@ -1,0 +1,7 @@
+# Configure privately in the process environment. This file is not auto-loaded.
+PORT=3000
+PUBLIC_ORIGIN=http://127.0.0.1:3000
+# Empty mapping deliberately disables teacher access.
+PARKOUR_TEACHERS_JSON={}
+# Default storage is disposable. Optional local development path only:
+# PARKOUR_DB_PATH=/path/to/local-development.sqlite

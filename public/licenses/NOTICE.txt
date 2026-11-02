@@ -1,0 +1,4 @@
+Skybound Sprint third-party notices
+
+Three.js 0.180.0 — MIT License. See three-mit.txt.
+Rapier JavaScript 0.19.3 — Apache License 2.0. See apache-2.0.txt.

@@ -1,0 +1,445 @@
+{
+  "loader": "Three 180 GLTFLoader actual parse + animation sampling",
+  "assets": [
+    {
+      "filename": "avatar-fox.glb",
+      "bytes": 98544,
+      "meshes": 15,
+      "triangles": 752,
+      "vertices": 2184,
+      "materials": [
+        "Fur",
+        "Ink",
+        "Cream",
+        "EyeHighlight",
+        "InnerEar"
+      ],
+      "animations": [
+        {
+          "name": "AvatarIdle",
+          "duration": 1.0166666507720947,
+          "tracks": 12,
+          "finite": true
+        },
+        {
+          "name": "AvatarRun",
+          "duration": 0.5166666507720947,
+          "tracks": 12,
+          "finite": true
+        },
+        {
+          "name": "AvatarGlide",
+          "duration": 1.0166666507720947,
+          "tracks": 12,
+          "finite": true
+        }
+      ],
+      "bounds": {
+        "min": [
+          -0.3400000333786011,
+          0,
+          -0.8782788515090942
+        ],
+        "max": [
+          0.3400000333786011,
+          1.5900000929832458,
+          1.2581343307430664
+        ]
+      }
+    },
+    {
+      "filename": "avatar-rabbit.glb",
+      "bytes": 134204,
+      "meshes": 14,
+      "triangles": 1080,
+      "vertices": 3240,
+      "materials": [
+        "Fur.001",
+        "Ink.001",
+        "Cream.001",
+        "EyeHighlight.001",
+        "InnerEar.001"
+      ],
+      "animations": [
+        {
+          "name": "AvatarIdle",
+          "duration": 1.0166666507720947,
+          "tracks": 12,
+          "finite": true
+        },
+        {
+          "name": "AvatarRun",
+          "duration": 0.5166666507720947,
+          "tracks": 12,
+          "finite": true
+        },
+        {
+          "name": "AvatarGlide",
+          "duration": 1.0166666507720947,
+          "tracks": 12,
+          "finite": true
+        }
+      ],
+      "bounds": {
+        "min": [
+          -0.2931080013513565,
+          0,
+          -0.7882788628339767
+        ],
+        "max": [
+          0.2931080162525177,
+          2.070000171661377,
+          0.7499999552965164
+        ]
+      }
+    },
+    {
+      "filename": "wings-angel.glb",
+      "bytes": 29796,
+      "meshes": 4,
+      "triangles": 376,
+      "vertices": 696,
+      "materials": [
+        "Accent_angel",
+        "Wing_angel"
+      ],
+      "animations": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.0166666507720947,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        }
+      ],
+      "bounds": {
+        "open": {
+          "min": [
+            -2.004999166065998,
+            0.029999999329447746,
+            -0.21799663620203252
+          ],
+          "max": [
+            2.004999166065998,
+            1.1349999904632568,
+            0.2425074643034431
+          ]
+        },
+        "folded": {
+          "min": [
+            -0.6488440848051316,
+            0.029999999329447746,
+            -0.017992697265870515
+          ],
+          "max": [
+            0.6488440848051316,
+            1.1349999904632568,
+            1.8862106256849112
+          ]
+        }
+      }
+    },
+    {
+      "filename": "wings-devil.glb",
+      "bytes": 29592,
+      "meshes": 4,
+      "triangles": 280,
+      "vertices": 516,
+      "materials": [
+        "Accent_devil",
+        "Wing_devil"
+      ],
+      "animations": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.0166666507720947,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        }
+      ],
+      "bounds": {
+        "open": {
+          "min": [
+            -1.9600002143203883,
+            -0.12999999523162842,
+            -0.08330134457270325
+          ],
+          "max": [
+            1.9600002143203883,
+            1.2399999986040622,
+            0.030007222706412935
+          ]
+        },
+        "folded": {
+          "min": [
+            -0.6185168148701549,
+            -0.12999999523162842,
+            -0.038783454690408614
+          ],
+          "max": [
+            0.6185168148701549,
+            1.2399999986040622,
+            1.7898813178475759
+          ]
+        }
+      }
+    },
+    {
+      "filename": "wings-dragon.glb",
+      "bytes": 33336,
+      "meshes": 4,
+      "triangles": 328,
+      "vertices": 624,
+      "materials": [
+        "Accent_dragon",
+        "Wing_dragon"
+      ],
+      "animations": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.0166666507720947,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        }
+      ],
+      "bounds": {
+        "open": {
+          "min": [
+            -2.0200000481492286,
+            -0.12999999523162842,
+            -0.08330132521071848
+          ],
+          "max": [
+            2.0200000481492286,
+            1.2799999542069047,
+            0.03000747813410426
+          ]
+        },
+        "folded": {
+          "min": [
+            -0.6435323115509088,
+            -0.12999999523162842,
+            -0.03878344397681138
+          ],
+          "max": [
+            0.6435323115509088,
+            1.2799999542069047,
+            1.8480040726990739
+          ]
+        }
+      }
+    },
+    {
+      "filename": "wings-elephant.glb",
+      "bytes": 20876,
+      "meshes": 4,
+      "triangles": 152,
+      "vertices": 264,
+      "materials": [
+        "Accent_elephant",
+        "Wing_elephant"
+      ],
+      "animations": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.0166666507720947,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        }
+      ],
+      "bounds": {
+        "open": {
+          "min": [
+            -1.6700000684219733,
+            -0.15000000596046448,
+            -0.037499148756621484
+          ],
+          "max": [
+            1.6700000684219733,
+            1.0700000524520874,
+            0.08031138942323712
+          ]
+        },
+        "folded": {
+          "min": [
+            -0.5337329059382137,
+            -0.15000000596046448,
+            -0.007445253993229638
+          ],
+          "max": [
+            0.5337329059382137,
+            1.0700000524520874,
+            1.5089537775646216
+          ]
+        }
+      }
+    },
+    {
+      "filename": "wings-glow.glb",
+      "bytes": 33028,
+      "meshes": 4,
+      "triangles": 280,
+      "vertices": 660,
+      "materials": [
+        "Accent_glow",
+        "Wing_glow"
+      ],
+      "animations": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.0166666507720947,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        }
+      ],
+      "bounds": {
+        "open": {
+          "min": [
+            -1.9900000713715322,
+            0.05000000074505806,
+            -0.0399999991056167
+          ],
+          "max": [
+            1.9900000713715322,
+            1.2799999713897705,
+            0.1182841496436687
+          ]
+        },
+        "folded": {
+          "min": [
+            -0.6010400239680667,
+            0.05000000074505806,
+            -0.009927005324306185
+          ],
+          "max": [
+            0.6010400239680667,
+            1.2799999713897705,
+            1.8158405053431317
+          ]
+        }
+      }
+    },
+    {
+      "filename": "wings-parakeet.glb",
+      "bytes": 37468,
+      "meshes": 16,
+      "triangles": 376,
+      "vertices": 696,
+      "materials": [
+        "Accent_parakeet",
+        "Feather_0",
+        "Feather_1",
+        "Feather_2",
+        "Feather_3",
+        "Feather_4",
+        "Feather_5",
+        "Wing_parakeet"
+      ],
+      "animations": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.0166666507720947,
+          "tracks": 6,
+          "finite": true
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3499999940395355,
+          "tracks": 6,
+          "finite": true
+        }
+      ],
+      "bounds": {
+        "open": {
+          "min": [
+            -2.0049991660659168,
+            0.029999999329447746,
+            -0.21799663620203252
+          ],
+          "max": [
+            2.0049991660659168,
+            1.1349999904632568,
+            0.2425074587155076
+          ]
+        },
+        "folded": {
+          "min": [
+            -0.6488440848051316,
+            0.029999999329447746,
+            -0.017992697265870515
+          ],
+          "max": [
+            0.6488440848051316,
+            1.1349999904632568,
+            1.8862106242981245
+          ]
+        }
+      }
+    }
+  ]
+}
