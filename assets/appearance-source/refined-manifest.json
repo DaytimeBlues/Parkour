@@ -1,0 +1,278 @@
+{
+  "revision": "refined-20261103",
+  "authoring": "Original project geometry; Blender 4.3.2; no third-party models, textures or addons.",
+  "reproduce": "blender -b -noaudio --python assets/appearance-source/generate_refined_assets.py -- /tmp/parkour-refined-export",
+  "determinism": "All eight GLBs byte-identical across pass-a, pass-b and independent final pass-c; .blend containers not byte-deterministic.",
+  "files": [
+    {
+      "path": "assets/appearance-source/generate_refined_assets.py",
+      "bytes": 19723,
+      "sha256": "7e57cbcb8cb5fdf690ebf578ba996bc6c99af960995258d7733413412705dbad"
+    },
+    {
+      "path": "public/models/appearance/avatar-fox.glb",
+      "bytes": 75076,
+      "sha256": "04e9bd8f45d068003a5e3c455b7ccf5fb25749b26e651b6677b346777c138823"
+    },
+    {
+      "path": "public/models/appearance/avatar-rabbit.glb",
+      "bytes": 85784,
+      "sha256": "2f4bb92fece9899db787ea343b5f938ff63e40b0604d2c3ecc5dffad8fcd5dce"
+    },
+    {
+      "path": "public/models/appearance/wings-angel.glb",
+      "bytes": 35376,
+      "sha256": "772959766a3cc2f8fc7bf7c2dc3254a2d5e029cecb3056685766546cb1788918"
+    },
+    {
+      "path": "public/models/appearance/wings-devil.glb",
+      "bytes": 32120,
+      "sha256": "6204782b3fe2e88abaca66e0ce6bf5d19dc7ac2990aa6875f766f4ee202c9ca2"
+    },
+    {
+      "path": "public/models/appearance/wings-dragon.glb",
+      "bytes": 39980,
+      "sha256": "ac8dc1e7055e0fde5c000d06b3f99930fc6fe84ad0ace91d443291610b1eea7b"
+    },
+    {
+      "path": "public/models/appearance/wings-elephant.glb",
+      "bytes": 44952,
+      "sha256": "d6df79d7d670c8d586d2fc631b9da299c6f8a67457be3096569412a80c890770"
+    },
+    {
+      "path": "public/models/appearance/wings-glow.glb",
+      "bytes": 24152,
+      "sha256": "2cd21ef5044d0dc4596cc026efe17629da07681c58f2cd008b9f66c64a38732a"
+    },
+    {
+      "path": "public/models/appearance/wings-parakeet.glb",
+      "bytes": 39580,
+      "sha256": "2101010cd2cbc95728049b8fb007dc7b66e153d35c290896a6a650387ce28455"
+    }
+  ],
+  "assets": [
+    {
+      "name": "avatar-fox",
+      "bytes": 75076,
+      "sha256": "04e9bd8f45d068003a5e3c455b7ccf5fb25749b26e651b6677b346777c138823",
+      "candidate": {
+        "triangles": 2932,
+        "vertices": 1582,
+        "meshes": 16,
+        "materials": [
+          "Fur",
+          "Ink",
+          "Cream",
+          "EyeHighlight",
+          "InnerEar",
+          "Iris"
+        ]
+      },
+      "baseline": {
+        "bytes": 98544,
+        "triangles": 752,
+        "vertices": 2184,
+        "meshes": 15,
+        "materials": [
+          "Fur",
+          "Ink",
+          "Cream",
+          "EyeHighlight",
+          "InnerEar"
+        ]
+      }
+    },
+    {
+      "name": "avatar-rabbit",
+      "bytes": 85784,
+      "sha256": "2f4bb92fece9899db787ea343b5f938ff63e40b0604d2c3ecc5dffad8fcd5dce",
+      "candidate": {
+        "triangles": 3486,
+        "vertices": 1831,
+        "meshes": 19,
+        "materials": [
+          "Cream.001",
+          "Fur.001",
+          "InnerEar.001",
+          "EyeHighlight.001",
+          "Ink.001",
+          "Iris.001"
+        ]
+      },
+      "baseline": {
+        "bytes": 134204,
+        "triangles": 1080,
+        "vertices": 3240,
+        "meshes": 14,
+        "materials": [
+          "Fur.001",
+          "Ink.001",
+          "Cream.001",
+          "EyeHighlight.001",
+          "InnerEar.001"
+        ]
+      }
+    },
+    {
+      "name": "wings-angel",
+      "bytes": 35376,
+      "sha256": "772959766a3cc2f8fc7bf7c2dc3254a2d5e029cecb3056685766546cb1788918",
+      "candidate": {
+        "triangles": 1144,
+        "vertices": 632,
+        "meshes": 6,
+        "materials": [
+          "Accent_angel",
+          "Soft_angel",
+          "Wing_angel"
+        ]
+      },
+      "baseline": {
+        "bytes": 29796,
+        "triangles": 376,
+        "vertices": 696,
+        "meshes": 4,
+        "materials": [
+          "Accent_angel",
+          "Wing_angel"
+        ]
+      }
+    },
+    {
+      "name": "wings-devil",
+      "bytes": 32120,
+      "sha256": "6204782b3fe2e88abaca66e0ce6bf5d19dc7ac2990aa6875f766f4ee202c9ca2",
+      "candidate": {
+        "triangles": 772,
+        "vertices": 606,
+        "meshes": 6,
+        "materials": [
+          "Accent_devil",
+          "Soft_devil",
+          "Wing_devil"
+        ]
+      },
+      "baseline": {
+        "bytes": 29592,
+        "triangles": 280,
+        "vertices": 516,
+        "meshes": 4,
+        "materials": [
+          "Accent_devil",
+          "Wing_devil"
+        ]
+      }
+    },
+    {
+      "name": "wings-parakeet",
+      "bytes": 39580,
+      "sha256": "2101010cd2cbc95728049b8fb007dc7b66e153d35c290896a6a650387ce28455",
+      "candidate": {
+        "triangles": 1144,
+        "vertices": 632,
+        "meshes": 16,
+        "materials": [
+          "Accent_parakeet",
+          "Feather_0",
+          "Feather_1",
+          "Feather_2",
+          "Feather_3",
+          "Feather_4",
+          "Feather_5",
+          "Wing_parakeet"
+        ]
+      },
+      "baseline": {
+        "bytes": 37468,
+        "triangles": 376,
+        "vertices": 696,
+        "meshes": 16,
+        "materials": [
+          "Accent_parakeet",
+          "Feather_0",
+          "Feather_1",
+          "Feather_2",
+          "Feather_3",
+          "Feather_4",
+          "Feather_5",
+          "Wing_parakeet"
+        ]
+      }
+    },
+    {
+      "name": "wings-elephant",
+      "bytes": 44952,
+      "sha256": "d6df79d7d670c8d586d2fc631b9da299c6f8a67457be3096569412a80c890770",
+      "candidate": {
+        "triangles": 1172,
+        "vertices": 1006,
+        "meshes": 6,
+        "materials": [
+          "Accent_elephant",
+          "Soft_elephant",
+          "Wing_elephant"
+        ]
+      },
+      "baseline": {
+        "bytes": 20876,
+        "triangles": 152,
+        "vertices": 264,
+        "meshes": 4,
+        "materials": [
+          "Accent_elephant",
+          "Wing_elephant"
+        ]
+      }
+    },
+    {
+      "name": "wings-glow",
+      "bytes": 24152,
+      "sha256": "2cd21ef5044d0dc4596cc026efe17629da07681c58f2cd008b9f66c64a38732a",
+      "candidate": {
+        "triangles": 212,
+        "vertices": 378,
+        "meshes": 6,
+        "materials": [
+          "Accent_glow",
+          "Soft_glow",
+          "Wing_glow"
+        ]
+      },
+      "baseline": {
+        "bytes": 33028,
+        "triangles": 280,
+        "vertices": 660,
+        "meshes": 4,
+        "materials": [
+          "Accent_glow",
+          "Wing_glow"
+        ]
+      }
+    },
+    {
+      "name": "wings-dragon",
+      "bytes": 39980,
+      "sha256": "ac8dc1e7055e0fde5c000d06b3f99930fc6fe84ad0ace91d443291610b1eea7b",
+      "candidate": {
+        "triangles": 1172,
+        "vertices": 834,
+        "meshes": 6,
+        "materials": [
+          "Accent_dragon",
+          "Soft_dragon",
+          "Wing_dragon"
+        ]
+      },
+      "baseline": {
+        "bytes": 33336,
+        "triangles": 328,
+        "vertices": 624,
+        "meshes": 4,
+        "materials": [
+          "Accent_dragon",
+          "Wing_dragon"
+        ]
+      }
+    }
+  ]
+}

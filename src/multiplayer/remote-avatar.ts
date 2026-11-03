@@ -3,10 +3,11 @@ import {AppearanceAssets, wingAnimator, type AppearanceModel} from '../render/ap
 import {validAppearance, type Appearance} from '../../shared/appearance.mjs';
 import type {Team} from './client.ts';
 
-export const REMOTE_AVATAR_BUDGET=Object.freeze({entries:32,templates:8,drawCallsPerAvatar:32,trianglesPerAvatar:1468});
+export const REMOTE_AVATAR_BUDGET=Object.freeze({entries:32,templates:8,drawCallsPerAvatar:36,batchedDrawCallsPerAvatar:26,trianglesPerAvatar:4670});
 
 /** Cosmetic-only clones. Templates share resources; entries own transforms/mixers.
- * Structural cap: 32 entries, eight cached assets, <=32 draws per loaded entry.
+ * Structural cap: 32 entries, eight cached assets, <=36 raw draws; <=26 in the active parakeet-batched path.
+ * Refined rigid characters cost <=4,670 triangles including their team marker.
  * This cap is NOT an FPS/school-device acceptance claim.
  */
 export function appearanceFactory(assets:AppearanceAssets, onError:()=>void=()=>{}) {
