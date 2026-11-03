@@ -157,13 +157,16 @@ export class MultiplayerClient {
       if (error instanceof NetworkError && error.message === 'STALE_EPOCH') {
         this.pending = []; this.batch = null;
         try {
+          const startedAt = this.clock();
           const reply = await api<Reply>('state', {code:this.seat.code}, this.seat.seatToken, this.fetcher);
           if (generation !== this.generation || suspension !== this.suspensionRevision || this.expireRecovery()) return;
           if (!reply?.room) throw new Error('Epoch baseline rejected');
           const self=reply.room.players.find(p=>p.id===this.seat.playerId);
           this.message='Match state changed. Movement rebased to the server.';
-          if (reply.playerId !== this.seat.playerId || !self || self.active === false || reply.ack !== self.seq || !this.accept(reply.room, reply.ack, true)) throw new Error('Epoch baseline rejected');
-          this.predictionHeld = false;
+          if (reply.playerId !== this.seat.playerId || !self || self.active === false || reply.ack !== self.seq || !this.accept(reply.room, reply.ack, true, false)) throw new Error('Epoch baseline rejected');
+          // Notify only the validated final state. A slow state read already
+          // satisfied the send spacing; do not add another receive-time delay.
+          this.predictionHeld = false; this.lastAttempt = startedAt; this.changed();
         } catch (baselineError) { if(generation===this.generation && suspension===this.suspensionRevision && !this.expireRecovery()){this.needsReconnect=true; if(terminalProtocolError(baselineError) || baselineError instanceof NetworkError && [400,401,403,404,409,410].includes(baselineError.status)){this.autoRecovery=false;this.recoveryDeadline=0;} this.message='Match changed while offline. Reconnect before moving.'; this.changed();} }
         return;
       }

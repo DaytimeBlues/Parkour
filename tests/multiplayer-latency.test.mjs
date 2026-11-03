@@ -85,3 +85,22 @@ test('authenticated state reads after explicit credit rejection cannot refresh m
  now=1200;const rejected=await call('sync',{code,epoch:1,sequence:1,frames:Array.from({length:30},()=>({...move}))},joined.seatToken);assert.equal(rejected.status,409);assert.equal((await rejected.json()).error,'INPUT_TOO_FAST');
  const row=()=>db.sqlite.prepare('SELECT state_json,version FROM mp_seats WHERE id=?').get(joined.playerId);const before=row();for(let i=0;i<5;i++){now+=700;const res=await call('state',{code},joined.seatToken);assert.equal(res.status,200);assert.equal((await res.json()).ack,0);assert.deepEqual(row(),before);}const p=JSON.parse(before.state_json);assert.equal(p.seq,0);assert.ok(p.creditMs<=500);
 });
+
+test('delayed epoch baseline publishes cleared hold once and reuses the state send-start deadline',async()=>{
+ let now=0,resolveSync,resolveState;const calls=[],changes=[];
+ const c=new MultiplayerClient(seat,async(path,init)=>{calls.push({path,at:now});if(path.endsWith('/state'))return await new Promise(r=>resolveState=r);if(calls.length===1)return await new Promise(r=>resolveSync=r);const s=snapshot(3,2);s.snapshotMs=Math.floor(now);s.players[0].seq=1;return reply(s,1);},()=>now,()=>changes.push({held:c.predictionHeld,lastAttempt:c.lastAttempt,epoch:c.room?.epoch}));
+ c.accept(snapshot(),0,true);for(let i=0;i<12;i++)c.predict(move);now=200;const task=c.pump();for(let i=0;i<49;i++){now+=1000/60;c.predict(move);}assert.equal(c.predictionHeld,true);resolveSync(new Response(JSON.stringify({error:'STALE_EPOCH'}),{status:409}));while(!resolveState)await tick();const stateStarted=now;
+ now+=700;const s=snapshot(2,2);s.snapshotMs=Math.floor(now);const priorChanges=changes.length;resolveState(reply(s));await task;
+ assert.deepEqual({held:c.predictionHeld,lastAttempt:c.lastAttempt,notification:changes.at(-1)},{held:false,lastAttempt:stateStarted,notification:{held:false,lastAttempt:stateStarted,epoch:2}});
+ assert.equal(changes.length,priorChanges+1);assert.equal(c.needsReconnect,false);assert.equal(c.pending.length,0);assert.equal(c.batch,null);
+ c.predict(move);const count=calls.length;await c.pump();assert.equal(calls.length,count+1);assert.equal(c.ack,1);c.dispose();
+});
+
+for(const mode of ['suspended','disposed','stale-epoch','stale-version','wrong-player','wrong-ack'])test(`delayed epoch baseline ${mode} cannot clear the hold or publish a successful update`,async()=>{
+ let now=0,resolveState,changes=0;const initial=snapshot(5,3);initial.snapshotMs=1000;
+ const c=new MultiplayerClient(seat,async(path)=>path.endsWith('/sync')?new Response(JSON.stringify({error:'STALE_EPOCH'}),{status:409}):await new Promise(r=>resolveState=r),()=>now,()=>changes++);
+ c.accept(initial,0,true);c.predict(move);now=200;const task=c.pump();while(!resolveState)await tick();c.predictionHeld=true;
+ if(mode==='suspended')c.suspend();if(mode==='disposed')c.dispose();const before={changes,lastAttempt:c.lastAttempt,lastGood:c.lastGood,epoch:c.room.epoch,version:c.room.version};now+=700;
+ const s=snapshot(6,4);s.snapshotMs=1500;let ack=0,playerId='p1';if(mode==='stale-epoch')s.epoch=2;if(mode==='stale-version'){s.epoch=3;s.version=4;}if(mode==='wrong-player')playerId='other';if(mode==='wrong-ack')ack=1;
+ resolveState(reply(s,ack,playerId));await task;assert.equal(c.needsReconnect,true);assert.equal(c.predictionHeld,true);assert.equal(c.lastAttempt,before.lastAttempt);assert.equal(c.lastGood,before.lastGood);assert.equal(c.room.epoch,before.epoch);assert.equal(c.room.version,before.version);if(['suspended','disposed'].includes(mode))assert.equal(changes,before.changes);c.dispose();
+});
