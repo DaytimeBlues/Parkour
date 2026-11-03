@@ -44,3 +44,34 @@ rendered testing, school-device timing and hosted eight-session acceptance are
 still required before calling this candidate classroom-ready. The smaller GLB
 transfer sizes do not establish faster drawing or startup.
 
+
+## Optional rigid character batching
+
+The multiplayer path now derives color batches within each existing rigid parent
+before cloning cached templates. It preserves each joint/socket, all animation
+tracks, indexed vertex count, triangle count and every material setting including
+roughness. Only equal-shading sibling pieces are combined; their linear base colors
+become vertex colors. Solo and preview loaders remain unchanged. The shipping GLBs
+and source generator are unchanged.
+
+For the accepted assets, fox character draws fall from 16 to 13 and rabbit draws
+from 19 to 9. Including the marker and worst six-draw wings, the active worst case
+is 20 rather than 26 draws per avatar: 160 rather than 208 for eight visible avatars,
+a 23% structural reduction. The original 36 raw/26 wing-only bounds remain explicit
+fallbacks. Unsupported material, geometry, animation or hierarchy changes keep the
+original meshes, and callers can disable character batching with `batchAvatars:false`.
+The derivation preserves shared resources still used by unmerged meshes and disposes
+replaced/derived resources exactly once.
+
+This is fewer submitted mesh draws, not an FPS claim. Vertex-color attributes add
+some cached geometry memory; indexed geometry is retained rather than expanded.
+Actual target-device rendered timing, full application build and ordinary browser
+acceptance remain separate gates.
+
+Measured unique active BufferAttribute payload rises by 8,136 bytes for fox and
+20,736 bytes for rabbit (including changed sharing of index accessors). These are
+one-time template costs shared by clones, not a per-player geometry allocation.
+Each template uses five material objects after derivation, versus six originally.
+The loader may retain disposed originals in parser caches, so additional retained
+CPU arrays are approximately 31.8 KB for fox and 64.9 KB for rabbit, rather than
+only the smaller active-geometry deltas above. This remains bounded per template.

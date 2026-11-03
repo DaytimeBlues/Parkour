@@ -27,5 +27,5 @@ test('explicit refined asset cost is bounded independently for raw and active ba
  const source=read('src/multiplayer/remote-avatar.ts').toString(),expression=source.match(/REMOTE_AVATAR_BUDGET=Object\.freeze\((\{[^\n]+\})\)/)[1],b=vm.runInNewContext('('+expression+')');
  const maxAvatar=Math.max(expected['avatar-fox'][0],expected['avatar-rabbit'][0]),maxWing=Math.max(...Object.entries(expected).filter(([k])=>k.startsWith('wings')).map(([,v])=>v[0]));
  assert.equal(b.trianglesPerAvatar,maxAvatar+maxWing+12);assert.equal(b.drawCallsPerAvatar,19+16+1);assert.equal(b.batchedDrawCallsPerAvatar,19+6+1);assert.equal(b.entries,32);assert.equal(b.templates,8);
- assert.match(read('src/multiplayer/scene.ts').toString(),/batchParakeet:true/);assert.equal(8*b.trianglesPerAvatar,37360);assert.equal(8*b.batchedDrawCallsPerAvatar,208);
+ assert.match(read('src/multiplayer/scene.ts').toString(),/batchParakeet:true/);assert.equal(8*b.trianglesPerAvatar,37360);assert.equal(8*b.batchedDrawCallsPerAvatar,208);assert.equal(8*b.optimizedDrawCallsPerAvatar,160);assert.match(read('src/multiplayer/scene.ts').toString(),/batchAvatars:true/);
 });

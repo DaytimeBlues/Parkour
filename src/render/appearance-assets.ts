@@ -2,16 +2,17 @@ import * as THREE from 'three';
 import {GLTFLoader,type GLTF} from 'three/addons/loaders/GLTFLoader.js';
 import {clone} from 'three/addons/utils/SkeletonUtils.js';
 import {batchParakeetWings} from './parakeet-batching.ts';
+import {batchRigidAvatar} from './avatar-batching.ts';
 import type {CharacterKind,WingStyle} from '../simulation/appearance.ts';
 export type AppearanceModel={root:THREE.Object3D;animations:THREE.AnimationClip[];dispose:()=>void};
 /** Templates own GPU resources; clones own transforms/mixers only. One application-lifetime cache. */
 export class AppearanceAssets{
  private pending=new Map<string,Promise<GLTF>>();private disposed=false;
- private readonly base:string;private readonly loader:Pick<GLTFLoader,'loadAsync'>;private readonly options:{batchParakeet?:boolean};
- constructor(base:string,loader:Pick<GLTFLoader,'loadAsync'>=new GLTFLoader(),options:{batchParakeet?:boolean}={}){this.base=base;this.loader=loader;this.options=options;}
+ private readonly base:string;private readonly loader:Pick<GLTFLoader,'loadAsync'>;private readonly options:{batchParakeet?:boolean;batchAvatars?:boolean};
+ constructor(base:string,loader:Pick<GLTFLoader,'loadAsync'>=new GLTFLoader(),options:{batchParakeet?:boolean;batchAvatars?:boolean}={}){this.base=base;this.loader=loader;this.options=options;}
  private async model(name:string):Promise<AppearanceModel>{
   if(this.disposed)throw new Error('Appearance assets disposed');let task=this.pending.get(name);
-  if(!task){task=this.loader.loadAsync(`${this.base}models/appearance/${name}.glb`).then(gltf=>{if(this.disposed){disposeTemplates([gltf]);throw new Error('Appearance assets disposed');}if(this.options.batchParakeet&&name==='wings-parakeet')batchParakeetWings(gltf);return gltf;});this.pending.set(name,task);task.catch(()=>{if(this.pending.get(name)===task)this.pending.delete(name);});}
+  if(!task){task=this.loader.loadAsync(`${this.base}models/appearance/${name}.glb`).then(gltf=>{if(this.disposed){disposeTemplates([gltf]);throw new Error('Appearance assets disposed');}if(this.options.batchParakeet&&name==='wings-parakeet')batchParakeetWings(gltf);if(this.options.batchAvatars&&name.startsWith('avatar-'))batchRigidAvatar(gltf);return gltf;});this.pending.set(name,task);task.catch(()=>{if(this.pending.get(name)===task)this.pending.delete(name);});}
   const gltf=await task;if(this.disposed)throw new Error('Appearance assets disposed');const root=clone(gltf.scene);let released=false;
   return{root,animations:gltf.animations,dispose(){if(released)return;released=true;root.removeFromParent();}};
  }
