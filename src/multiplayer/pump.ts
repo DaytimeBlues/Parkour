@@ -31,7 +31,7 @@ export function createPumpDriver(getClient: () => PumpClient | null, enabled: ()
     const client = getClient(), now = clock();
     timing.onWake?.(now);
     if (!enabled() || !client || !client.room || client.room.status === 'ended') { arm(200, owner); return; }
-    if (client.needsReconnect) { await client.recover?.(); arm(200, owner); return; }
+    if (client.needsReconnect) { await client.recover?.(); arm(client.needsReconnect ? 200 : client.lastAttempt + 200 - clock(), owner); return; }
     // A manual reconnect or another explicit owner may be busy. Do not spin on
     // an expired send deadline or add another request to that client.
     if (client.busy) { arm(50, owner); return; }

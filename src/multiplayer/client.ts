@@ -8,6 +8,7 @@ export type Room = { code: string; status: 'lobby' | 'running' | 'paused' | 'end
 export type Seat = { code: string; seatToken: string; playerId: string };
 type Reply = { room: Room; ack: number; playerId: string };
 export class NetworkError extends Error { status: number; constructor(status: number, message: string) { super(message); this.status=status; } }
+const terminalProtocolError = (error: unknown) => error instanceof Error && /^(?:INVALID_MULTIPLAYER_|UNSUPPORTED_MULTIPLAYER_|Unexpected acknowledgment|Unexpected reconnect|Reconnect baseline|Timing baseline|Epoch baseline)/.test(error.message);
 export async function api<T>(path: string, body?: unknown, token?: string, fetcher: typeof fetch = fetch): Promise<T> {
   const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 10000);
   try {
@@ -48,19 +49,44 @@ export class MultiplayerClient {
   private autoRecovery = true;
   private recoveryAfter = 0;
   private recoveryFailures = 0;
-  private budgetRecoveryTimes: number[] = [];
+  private recoveryDeadline = 0;
+  private suspensionRevision = 0;
+  /** A short visible on-map reconnect, not permission to predict or act. */
+  get recovering() { return this.recoveryDeadline > 0 && this.autoRecovery; }
+  private expireRecovery() {
+    if (!this.recovering || this.clock() < this.recoveryDeadline) return false;
+    this.recoveryDeadline = 0; this.autoRecovery = false; this.needsReconnect = true;
+    this.suspensionRevision++; // Late replies cannot revive an expired lifecycle.
+    this.message = 'Connection recovery timed out. Movement is frozen; reconnect when the network is stable.';
+    this.changed(); return true;
+  }
+  private requireRecovery() {
+    if (!this.recoveryDeadline && this.room?.status === 'running' && this.predicted) this.recoveryDeadline = this.clock() + 10000;
+    this.needsReconnect = true; this.predictionHeld = true;
+    this.message = 'Reconnecting — movement paused. Delayed inputs will not be replayed.';
+  }
+  predictionHeld = false;
+  discardedPredictionFrames = 0;
   private reconnectTask: Promise<void> | null = null;
   budgetRebases = 0;
   seat: Seat; private fetcher: typeof fetch; private clock: () => number; changed: () => void;
   constructor(seat: Seat, fetcher: typeof fetch = fetch, clock: () => number = () => performance.now(), changed: () => void = () => {}) { this.seat=seat;this.fetcher=fetcher;this.clock=clock;this.changed=changed; }
-  accept(room: Room, ack: number, initial = false, notify = true): boolean {
+  accept(room: Room, ack: number, initial = false, notify = true, pendingLimit = Infinity): boolean {
     if (!Number.isSafeInteger(ack) || ack < 0 || ack > 1000000) return false;
     if (room.code !== this.seat.code) return false;
     if (room.viewerPlayerId !== undefined && room.viewerPlayerId !== this.seat.playerId) { this.autoRecovery=false; this.needsReconnect=true; this.message='Seat identity changed or was removed. Reconnect before moving.'; if (notify) this.changed(); return false; }
     if (this.room && (room.epoch < this.room.epoch || ack < this.ack || room.epoch === this.room.epoch && (room.version < this.room.version || (room.snapshotMs ?? room.serverTime) < (this.room.snapshotMs ?? this.room.serverTime)))) return false;
     const epochChanged = this.room && room.epoch !== this.room.epoch;
     this.room = room; this.ack = ack;
-    if (epochChanged || initial || room.status !== 'running') this.pending = [];
+    if (epochChanged || initial || room.status !== 'running') {
+      this.discardedPredictionFrames += this.pending.length; this.pending = [];
+    }
+    // Inputs not yet submitted have no authoritative effect. Keep a bounded
+    // recent window rather than perpetuating debt beyond the server credit cap.
+    if (this.pending.length > pendingLimit) {
+      this.discardedPredictionFrames += this.pending.length - pendingLimit;
+      this.pending.splice(0, this.pending.length - pendingLimit);
+    }
     const own = room.players.find(p => p.id === this.seat.playerId);
     if (!own || own.active === false) { this.predicted = null; this.autoRecovery = false; this.needsReconnect = true; this.message = 'This seat was removed. Ask your teacher before joining again.'; }
     else {
@@ -71,101 +97,142 @@ export class MultiplayerClient {
     return !!own && own.active !== false;
   }
   predict(input: InputFrame) {
+    if (this.expireRecovery() || this.recovering) return;
     if (!this.predicted || this.room?.status !== 'running' || this.needsReconnect) return;
+    if (this.predictionHeld) return;
     if (this.clock() - this.lastGood > 1000 || this.pending.length + (this.batch?.frames.length ?? 0) >= 60) {
-      this.needsReconnect = true; this.message = 'Connection interrupted. Movement is frozen; reconnect to the authoritative room.'; this.changed(); return;
+      if (this.busy) {
+        // A bounded outstanding request is not evidence of revoked membership.
+        // Stop local prediction, never replay extra time or exit the map. The
+        // request timeout/error still fails closed and normal recovery owns it.
+        this.predictionHeld = true; this.message = 'Waiting for the server — movement prediction paused.'; this.changed(); return;
+      }
+      this.requireRecovery(); this.changed(); return;
     }
     const frame = { ...input };
     this.pending.push(frame); stepPlayer(this.predicted, frame, 1 / 60);
   }
   async pump() {
+    if (this.expireRecovery()) return;
     const now = this.clock();
     if (this.busy || this.needsReconnect || !this.room || this.room.status === 'ended' || now - this.lastAttempt < 200) return;
-    if (!this.batch) this.batch = { code: this.seat.code, epoch: this.room.epoch, sequence: this.ack + 1, frames: this.room.status === 'running' ? this.pending.splice(0, 30) : [] };
-    const batch = this.batch, generation = this.generation;
+    if (!this.batch) this.batch = { code: this.seat.code, epoch: this.room.epoch, sequence: this.ack + 1, frames: this.room.status === 'running' && !this.recovering ? this.pending.splice(0, 30) : [] };
+    const batch = this.batch, generation = this.generation, suspension = this.suspensionRevision;
     this.busy = true; this.lastAttempt = now;
     try {
       const reply = await api<Reply>('sync', batch, this.seat.seatToken, this.fetcher);
-      if (generation !== this.generation) return;
-      if (reply.ack !== batch.sequence || reply.playerId !== this.seat.playerId || reply.room.code !== this.seat.code) throw new Error('Unexpected acknowledgment');
-      this.batch = null; this.message = ''; this.accept(reply.room, reply.ack);
+      if (generation !== this.generation || suspension !== this.suspensionRevision || this.expireRecovery()) return;
+      if (!reply?.room || reply.ack !== batch.sequence || reply.playerId !== this.seat.playerId || reply.room.code !== this.seat.code) throw new Error('Unexpected acknowledgment');
+      if (!this.accept(reply.room, reply.ack, false, false, 30)) throw new NetworkError(409, 'INVALID_AUTHORITATIVE_BASELINE');
+      this.batch = null; this.predictionHeld = false; this.recoveryDeadline = 0; this.message = ''; this.changed();
     } catch (error) {
-      if (generation !== this.generation) return;
+      if (generation !== this.generation || suspension !== this.suspensionRevision || this.expireRecovery()) return;
       if (error instanceof NetworkError && error.status === 409 && error.message === 'INPUT_TOO_FAST') {
-        // Capped arrival-time credit can leave permanent queued-input debt.
-        // Rejection did not apply this batch: discard it and rebase once, rather
-        // than perpetuating catch-up retries. Never clear an existing freeze.
-        const now=this.clock();
-        this.budgetRecoveryTimes=this.budgetRecoveryTimes.filter(t=>now-t<10000);
-        if(this.needsReconnect || now-this.lastGood>1000 || this.budgetRecoveryTimes.length>=2){
-          this.needsReconnect=true;this.message='Movement timing interrupted. Reconnect to the authoritative room.';this.changed();return;
+        // This explicit rejection applied no movement. Read a fresh authorised
+        // baseline rather than reconnecting (which resets credit and amplifies
+        // sustained delay). No movement, sequence or server credit is invented.
+        if (this.needsReconnect) return; // Suspension/removal already owns recovery.
+        this.predictionHeld = true;
+        this.message = 'Movement timing delayed — resynchronizing with the server.'; this.changed();
+        try {
+          const startedAt = this.clock();
+          const reply = await api<Reply>('state', { code: this.seat.code }, this.seat.seatToken, this.fetcher);
+          if (generation !== this.generation || suspension !== this.suspensionRevision || this.expireRecovery()) return;
+          if (!reply?.room) throw new Error('Timing baseline rejected');
+          const own = reply.room.players.find(player => player.id === this.seat.playerId);
+          if (reply.playerId !== this.seat.playerId || !own || own.active === false || reply.ack !== own.seq ||
+              !this.accept(reply.room, reply.ack, true, false)) throw new Error('Timing baseline rejected');
+          this.discardedPredictionFrames += batch.frames.length;
+          this.batch = null; this.predictionHeld = false; this.lastAttempt = startedAt; this.budgetRebases++;
+          this.message = 'Movement timing resynchronized. Delayed inputs were discarded.';
+        } catch (baselineError) {
+          if (generation !== this.generation || suspension !== this.suspensionRevision || this.expireRecovery()) return;
+          this.needsReconnect = true;
+          if (terminalProtocolError(baselineError) || baselineError instanceof NetworkError && [400,401,403,404,409,410].includes(baselineError.status)) { this.autoRecovery = false; this.recoveryDeadline = 0; }
+          this.message = 'Timing recovery failed. Reconnect before moving.';
         }
-        this.budgetRecoveryTimes.push(now);this.budgetRebases++;
-        this.pending=[];this.batch=null;
-        this.message='Movement timing delayed — resynchronizing with the server.';
-        const expectedGeneration=this.generation+1;
-        try{
-          await this.reconnect();
-          if(this.generation===expectedGeneration&&!this.needsReconnect){this.message='Movement timing resynchronized. Delayed inputs were discarded.';this.changed();}
-        }catch{if(this.generation===expectedGeneration){this.needsReconnect=true;this.message='Timing recovery failed. Reconnect before moving.';this.changed();}}
-        return;
+        this.changed(); return;
       }
+
       if (error instanceof NetworkError && error.message === 'STALE_EPOCH') {
         this.pending = []; this.batch = null;
         try {
-          const reply = await api<{room:Room}>('state', {code:this.seat.code}, this.seat.seatToken, this.fetcher);
-          if (generation !== this.generation) return;
+          const reply = await api<Reply>('state', {code:this.seat.code}, this.seat.seatToken, this.fetcher);
+          if (generation !== this.generation || suspension !== this.suspensionRevision || this.expireRecovery()) return;
+          if (!reply?.room) throw new Error('Epoch baseline rejected');
           const self=reply.room.players.find(p=>p.id===this.seat.playerId);
           this.message='Match state changed. Movement rebased to the server.';
-          this.accept(reply.room, self?.seq ?? this.ack, true);
-        } catch { if(generation===this.generation){this.needsReconnect=true; this.message='Match changed while offline. Reconnect before moving.'; this.changed();} }
+          if (reply.playerId !== this.seat.playerId || !self || self.active === false || reply.ack !== self.seq || !this.accept(reply.room, reply.ack, true)) throw new Error('Epoch baseline rejected');
+          this.predictionHeld = false;
+        } catch (baselineError) { if(generation===this.generation && suspension===this.suspensionRevision && !this.expireRecovery()){this.needsReconnect=true; if(terminalProtocolError(baselineError) || baselineError instanceof NetworkError && [400,401,403,404,409,410].includes(baselineError.status)){this.autoRecovery=false;this.recoveryDeadline=0;} this.message='Match changed while offline. Reconnect before moving.'; this.changed();} }
         return;
       }
       this.message = error instanceof NetworkError ? error.message.replaceAll('_', ' ') : 'Connection delayed — retrying the same input batch.';
+      if (terminalProtocolError(error)) {
+        this.autoRecovery = false; this.recoveryDeadline = 0; this.needsReconnect = true;
+        this.message = 'Invalid server baseline. Movement is frozen; reconnect before moving.'; this.changed(); return;
+      }
       if (error instanceof NetworkError && [400, 401, 403, 404, 409, 410].includes(error.status)) {
         this.autoRecovery = error.message === 'RECONNECT_REQUIRED';
         this.needsReconnect = true;
-      } else if (this.clock() - this.lastGood > 1000) this.needsReconnect = true;
+        if (this.autoRecovery) this.requireRecovery();
+      } else if (this.clock() - this.lastGood > 1000) this.requireRecovery();
       this.changed();
     } finally { if (generation === this.generation) this.busy = false; }
   }
   /** Freeze/discard old inputs on tab suspension; resume from server authority. */
   suspend() {
     if (!this.room || this.room.status === 'ended') return;
+    this.suspensionRevision++; this.recoveryDeadline = 0;
     this.pending=[]; this.needsReconnect=true;
     this.message='Connection paused. Reconnecting when this tab is active.'; this.changed();
   }
   async recover() {
+    if (this.expireRecovery()) return;
     if (!this.needsReconnect || !this.autoRecovery || this.clock() < this.recoveryAfter || this.busy) return;
     this.recoveryAfter=this.clock()+1000;
-    try { await this.reconnect(); this.recoveryFailures=0; }
+    const suspension = this.suspensionRevision;
+    try { await this.reconnect(true); this.recoveryFailures=0; }
     catch (error) {
+      if (suspension !== this.suspensionRevision || this.expireRecovery()) return;
       if (error instanceof NetworkError && [400,401,403,404,409,410].includes(error.status)) this.autoRecovery=false;
       this.recoveryFailures++;
       this.recoveryAfter=this.clock()+Math.min(10000,1000*2**Math.min(this.recoveryFailures,4));
     }
   }
-  reconnect(): Promise<void> {
+  reconnect(automatic = false): Promise<void> {
     if(this.reconnectTask)return this.reconnectTask;
+    // A user's explicit retry starts a new lifecycle, not the exhausted budget
+    // of an earlier automatic attempt. Automatic retries never extend it.
+    if (!automatic) this.recoveryDeadline = 0;
     const task=this.performReconnect();
     const tracked=task.finally(()=>{if(this.reconnectTask===tracked)this.reconnectTask=null;});
     this.reconnectTask=tracked;return tracked;
   }
   private async performReconnect() {
-    const generation = ++this.generation;
+    const generation = ++this.generation, suspension = this.suspensionRevision, startedAt = this.clock();
     this.busy = true; this.needsReconnect = true;
     try {
       const reply = await api<Reply>('reconnect', { code: this.seat.code }, this.seat.seatToken, this.fetcher);
-      if (generation !== this.generation) return;
-      if(reply.room.code!==this.seat.code||reply.playerId!==this.seat.playerId)throw new Error('Unexpected reconnect response');
+      if (generation !== this.generation || suspension !== this.suspensionRevision || this.expireRecovery()) return;
+      if(!reply?.room||reply.room.code!==this.seat.code||reply.playerId!==this.seat.playerId)throw new Error('Unexpected reconnect response');
       const own = reply.room.players.find(player => player.id === this.seat.playerId);
       if (!own || own.active === false || reply.ack !== own.seq) throw new Error('Reconnect baseline rejected: acknowledgment does not match active runner sequence');
       // A rejected baseline must never unfreeze the prior prediction/timing.
       // Publish only the validated reconnect outcome in finally. An interim
       // frozen callback would incorrectly make the UI exit the map on success.
       if (!this.accept(reply.room, reply.ack, true, false)) throw new Error('Reconnect baseline rejected: stale room or invalid acknowledgment');
-      this.batch = null; this.needsReconnect = false; this.autoRecovery = true; this.message = '';
-    } catch (error) { if(generation===this.generation)this.message = error instanceof Error ? error.message.replaceAll('_', ' ') : 'Reconnect failed'; throw error; }
+      this.lastAttempt = startedAt;
+      if (reply.room.status !== 'running') this.recoveryDeadline = 0;
+      this.batch = null; this.predictionHeld = this.recovering; this.needsReconnect = false; this.autoRecovery = true;
+      this.message = this.recovering ? 'Reconnecting — checking live room. Movement paused.' : '';
+    } catch (error) {
+      if (generation === this.generation && suspension === this.suspensionRevision && !this.expireRecovery()) {
+        if (error instanceof NetworkError && [400,401,403,404,409,410].includes(error.status) || terminalProtocolError(error)) { this.autoRecovery = false; this.recoveryDeadline = 0; }
+        this.message = error instanceof Error ? error.message.replaceAll('_', ' ') : 'Reconnect failed';
+      }
+      throw error;
+    }
     finally { if(generation===this.generation){this.busy = false; this.changed();} }
   }
   dispose() { this.autoRecovery=false; this.generation++; this.needsReconnect = true; this.pending = []; this.batch = null; }

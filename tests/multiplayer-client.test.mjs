@@ -36,7 +36,7 @@ test('queue and stale-response bounds freeze prediction instead of replaying a l
 });
 test('stale epoch rejection discards old batch and pending frames then rebases without replay',async()=>{
  let now=0,paths=[];const changed=room(9,2);changed.status='paused';changed.players[0].seq=3;
- const client=new MultiplayerClient(seat,async(path)=>{paths.push(path);return path.endsWith('/sync')?response({error:'STALE_EPOCH'},409):response({room:changed});},()=>now);client.accept(room(),0,true);for(let i=0;i<12;i++)client.predict(move);now=200;await client.pump();assert.equal(client.ack,3);assert.equal(client.pending.length,0);assert.equal(client.batch,null);assert.equal(client.room.epoch,2);assert.equal(client.predicted.z,changed.players[0].z);assert.equal(paths.length,2);
+ const client=new MultiplayerClient(seat,async(path)=>{paths.push(path);return path.endsWith('/sync')?response({error:'STALE_EPOCH'},409):response({room:changed,ack:3,playerId:'p1'});},()=>now);client.accept(room(),0,true);for(let i=0;i<12;i++)client.predict(move);now=200;await client.pump();assert.equal(client.ack,3);assert.equal(client.pending.length,0);assert.equal(client.batch,null);assert.equal(client.room.epoch,2);assert.equal(client.predicted.z,changed.players[0].z);assert.equal(paths.length,2);
 });
 test('reconnect uses authoritative sequence and movement, clears uncertain work and ignores late old response',async()=>{
  let now=200,resolve;const changed=room(5);changed.players[0].seq=8;changed.players[0].x=15;
@@ -168,22 +168,27 @@ test('actual client rebases after 500ms arrival jitter and resumes twenty debt-f
   const created=await(await call('rooms',{},null,{userId:'teacher'})).json();const joined=await(await call('join',{code:created.code,nickname:'Fox',joinKey:'ab'.repeat(32)})).json();await call('join',{code:created.code,nickname:'Owl',joinKey:'cd'.repeat(32)});await call('control',{code:created.code,action:'start'},null,{userId:'teacher'});const initial=await(await call('state',{code:created.code},joined.seatToken)).json();
   const sent=[],statuses=[];const c=new MultiplayerClient({code:created.code,seatToken:joined.seatToken,playerId:joined.playerId},async(path,init)=>{sent.push({path,body:JSON.parse(init.body)});const res=await call(path.split('/').at(-1),JSON.parse(init.body),joined.seatToken);statuses.push(res.status);return res;},()=>clientNow);c.accept(decodeRoom(initial.room),0,true);
   const fill=n=>{for(let i=0;i<n;i++)c.predict(move);};fill(12);clientNow=1200;serverNow=1200;await c.pump();assert.equal(c.ack,1);
-  fill(12);clientNow=1400;serverNow=1900;await c.pump();assert.equal(c.ack,2);clientNow=2000;fill(36);serverNow=2001;await c.pump();assert.deepEqual(statuses.slice(-2),[409,200]);assert.equal(c.ack,3);assert.equal(c.needsReconnect,false);assert.equal(c.batch,null);assert.equal(c.pending.length,0);assert.equal(c.budgetRebases,1);assert.ok(sent.at(-1).path.endsWith('/reconnect'));assert.match(c.message,/resynchronized/);
+  fill(12);clientNow=1400;serverNow=1900;await c.pump();assert.equal(c.ack,2);clientNow=2000;fill(36);serverNow=2001;await c.pump();assert.deepEqual(statuses.slice(-2),[409,200]);assert.equal(c.ack,2);assert.equal(c.needsReconnect,false);assert.equal(c.batch,null);assert.equal(c.pending.length,0);assert.equal(c.budgetRebases,1);assert.ok(sent.at(-1).path.endsWith('/state'));assert.match(c.message,/resynchronized/);
   const count=sent.length;clientNow=2100;await c.pump();assert.equal(sent.length,count);
-  for(let i=0;i<20;i++){clientNow=2200+i*200;serverNow=2201+i*200;fill(12);await c.pump();assert.equal(statuses.at(-1),200);assert.equal(c.ack,4+i);assert.equal(c.pending.length,0);assert.equal(c.batch,null);assert.equal(c.needsReconnect,false);assert.equal(c.budgetRebases,1);assert.equal(sent.at(-1).body.frames.length,12);}
+  for(let i=0;i<20;i++){clientNow=2200+i*200;serverNow=2201+i*200;fill(12);await c.pump();assert.equal(statuses.at(-1),200);assert.equal(c.ack,3+i);assert.equal(c.pending.length,0);assert.equal(c.batch,null);assert.equal(c.needsReconnect,false);assert.equal(c.budgetRebases,1);assert.equal(sent.at(-1).body.frames.length,12);}
  }finally{db.close();}
 });
 
-test('automatic timing rebase is limited to two per10sec and failed recovery freezes without ack advance',async()=>{
+test('repeated explicit budget rejections rebase read-only without resetting credit; permanent failure disables recovery',async()=>{
  for(const failRecovery of[false,true]){
-  let now=0,reconnects=0;const c=new MultiplayerClient(seat,async(path)=>{if(path.endsWith('/sync'))return response({error:'INPUT_TOO_FAST'},409);reconnects++;return failRecovery?response({error:'SEAT_REMOVED'},403):response({room:room(),ack:0,playerId:'p1'});},()=>now);c.accept(room(),0,true);
-  for(let i=0;i<(failRecovery?1:3);i++){now+=200;c.predict(move);await c.pump();}
-  assert.equal(c.needsReconnect,true);assert.equal(c.ack,0);assert.equal(reconnects,failRecovery?1:2);assert.equal(c.budgetRebases,failRecovery?1:2);
+  let now=0,states=0,reconnects=0;const c=new MultiplayerClient(seat,async(path)=>{if(path.endsWith('/sync'))return response({error:'INPUT_TOO_FAST'},409);if(path.endsWith('/reconnect'))reconnects++;states++;return failRecovery?response({error:'SEAT_REMOVED'},403):response({room:room(),ack:0,playerId:'p1'});},()=>now);c.accept(room(),0,true);
+  for(let i=0;i<(failRecovery?1:6);i++){now+=200;c.predict(move);await c.pump();assert.equal(c.ack,0);assert.equal(c.pending.length,0);}
+  assert.equal(c.needsReconnect,failRecovery);assert.equal(states,failRecovery?1:6);assert.equal(c.budgetRebases,failRecovery?0:6);assert.equal(reconnects,0);
+  if(failRecovery){now+=20000;await c.recover();assert.equal(states,1);assert.equal(reconnects,0);}
  }
 });
 
-test('late budget rejection never clears an already-frozen 60-frame backlog',async()=>{
- let now=0,resolve,calls=0;const c=new MultiplayerClient(seat,async()=>{calls++;return await new Promise(r=>resolve=r);},()=>now);c.accept(room(),0,true);for(let i=0;i<12;i++)c.predict(move);now=200;const pending=c.pump();for(let i=0;i<49;i++)c.predict(move);assert.equal(c.needsReconnect,true);assert.equal(c.pending.length+c.batch.frames.length,60);resolve(response({error:'INPUT_TOO_FAST'},409));await pending;assert.equal(c.needsReconnect,true);assert.equal(c.ack,0);now=400;await c.pump();assert.equal(calls,1);
+test('outstanding backlog holds at60, then rejection discards it without replay or clearing a real suspension',async()=>{
+ for(const suspend of[false,true]){
+  let now=0,resolve,calls=0;const c=new MultiplayerClient(seat,async(path)=>{calls++;return path.endsWith('/sync')?await new Promise(r=>resolve=r):response({room:room(),ack:0,playerId:'p1'});},()=>now);c.accept(room(),0,true);for(let i=0;i<12;i++)c.predict(move);now=200;const pending=c.pump();for(let i=0;i<100;i++)c.predict(move);assert.equal(c.needsReconnect,false);assert.equal(c.predictionHeld,true);assert.equal(c.pending.length+c.batch.frames.length,60);
+  if(suspend)c.suspend();resolve(response({error:'INPUT_TOO_FAST'},409));await pending;assert.equal(c.needsReconnect,suspend);assert.equal(c.ack,0);assert.equal(c.pending.length,0);assert.equal(calls,suspend?1:2);
+  if(!suspend){assert.equal(c.predictionHeld,false);assert.equal(c.discardedPredictionFrames,60);c.predict(move);assert.equal(c.pending.length,1);}
+ }
 });
 
 test('timing rebase cannot revive paused/ended/removed phases or a disposed generation; reconnect calls coalesce',async()=>{
