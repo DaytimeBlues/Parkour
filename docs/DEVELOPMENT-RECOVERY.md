@@ -32,3 +32,20 @@ committer Codex <codex@openai.com> 1793708253 +1000
 
 Report unexpected recovery failures without stopping replacement drivers
 ```
+
+## Sequential entry menu candidate — 2e0ecaf
+
+The first screen now offers Solo or Multiplayer. Multiplayer uses separate Join and Teacher pages with Back preserving input choices. Back invalidates pending views, and cancelled solo starts stop music and release ranking controls. Room scores use responsive header flow. Connection details show accepted-update age, queued inputs and connection state without credentials; counters are not a live announcement stream.
+
+Independent source review passed after three corrections. Fifteen focused menu, capacity and music tests passed; the reviewer separately ran fourteen menu/music tests. A broader dependency-free network/server/adapter run had 136 passes and four environment-blocked failures: three graphics-dependent test files cannot import Three.js, and launch cannot serve an absent production build. No full build, rendered visual/assistive-technology, hosted reconnect or updated-model acceptance is claimed for this candidate. The backend authority, wire protocol and teacher authentication contracts are unchanged.
+
+Native source identity for exact composite restoration after the previous 8d7eaca checkpoint:
+
+```text
+tree e55182f7355e06d8672fa8b3c1135bbbae236beb
+parent 8d7eacadb670bd41584e0c4d9af9b7ff30aa44a1
+author Codex <codex@openai.com> 1793739767 +1000
+committer Codex <codex@openai.com> 1793739767 +1000
+
+Split Parkour entry into accessible sequential menu screens
+```

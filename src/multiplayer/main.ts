@@ -1,3 +1,4 @@
+import {createMenuSteps} from '../ui/menu-steps';
 import {loadAppearance} from '../simulation/appearance.ts';
 import {validAppearance} from '../../shared/appearance.mjs';
 import './style.css';
@@ -9,6 +10,10 @@ import { createPumpDriver } from './pump';
 
 const $=<T extends HTMLElement>(id:string)=>document.getElementById(id) as T;
 const lobby=$('lobby'),entry=$('entry'),roomPanel=$('room-panel'),notice=$('notice'),graphicsError=$('graphics-error'),hud=$('hud'),play=$<HTMLButtonElement>('play'),reconnect=$<HTMLButtonElement>('reconnect'),radar=$<HTMLCanvasElement>('radar');
+const entrySteps=createMenuSteps(entry,['role','join','teacher'],'role');
+$('choose-join').onclick=()=>entrySteps.show('join');
+$('choose-teacher').onclick=()=>{entrySteps.show('teacher');void loadTeacherRooms();};
+for(const id of ['join-back','teacher-back'])$(id).onclick=()=>{beginView(null);entrySteps.show('role');say('Choose how to join multiplayer.');};
 const STORAGE='skybound-fortress-seat-v1', JOIN_DRAFT='skybound-fortress-join-v1';
 let graphics:ReturnType<typeof createFortress>|null=null,client:MultiplayerClient|null=null,room:Room|null=null,teacher=false,signedIn=false,teacherBusy=false,rosterKey='',yaw=0,pitch=0,jump=false,last=performance.now(),acc=0,previousEpoch=-1,lastHud=0,graphicsAvailable=false,disposed=false,raf=0,appearanceWarning='';
 const keys=new GameplayKeys(),view=new ViewGate();
@@ -43,8 +48,20 @@ function displayRoom(value:Room){
   const newKey=JSON.stringify(room.players.map(p=>[p.id,p.nickname,p.team,p.connected]))+teacher+room.status;
   if(newKey!==rosterKey){rosterKey=newKey;const roster=$('roster');roster.replaceChildren();for(const p of room.players){const row=document.createElement('div');row.className='runner';const name=document.createElement('span');name.className=p.team;name.textContent=`${p.team==='red'?'▲':'■'} ${p.nickname}${p.id===client?.seat.playerId?' (you)':''}`;const state=document.createElement('small');state.textContent=p.connected===false?'Reconnecting…':`${p.team==='red'?'Red':'Blue'} team`;name.append(state);row.append(name);if(teacher&&room.status!=='ended'){const remove=document.createElement('button');remove.className='quiet';remove.textContent='Remove';remove.setAttribute('aria-label',`Remove ${p.nickname}`);remove.onclick=()=>void control('remove',{playerId:p.id});row.append(remove);}roster.append(row);}if(!room.players.length)roster.textContent='Share the room code. Players will appear here.';}
   const zones=$('zone-list');zones.replaceChildren();for(const definition of ARENA.zones){const z=room.zones.find(z=>z.id===definition.id);if(!z)continue;const zone=document.createElement('div');zone.className='zone';const heading=document.createElement('strong');heading.textContent=`${symbols[definition.shape]} ${definition.label}`;const state=document.createElement('small');state.textContent=z.owner?`${z.owner.toUpperCase()} owns`:'NEUTRAL';state.className=z.owner??'';const counts=(z as unknown as {counts?:{red:number;blue:number};contested?:boolean});if(counts.counts)state.textContent+=` · ${counts.counts.red}▲ / ${counts.counts.blue}■`;if(counts.counts&&counts.counts.red>0&&counts.counts.red===counts.counts.blue)state.textContent+=' · Tied';else if(counts.contested)state.textContent+=' · Contested';const progress=document.createElement('progress');progress.max=5000;progress.value=Math.abs(z.progress);progress.setAttribute('aria-label',`${definition.label} capture ${Math.round(Math.abs(z.progress)/50)} percent toward ${z.progress>=0?'red':'blue'}`);zone.append(heading,state,progress);zones.append(zone);}
-  $('connection').textContent=[client?.message,appearanceWarning].filter(Boolean).join(' · ');if(client?.needsReconnect&&!client.recovering){release();say(client.message);}
+  updateConnectionDetails();
+  updateConnectionMessage();if(client?.needsReconnect&&!client.recovering){release();say(client.message);}
   hud.hidden=!locked();lobby.hidden=locked();
+}
+function updateConnectionMessage(){
+ const message=[client?.message,appearanceWarning].filter(Boolean).join(' · '),target=$('connection');
+ if(target.textContent!==message)target.textContent=message;
+}
+function updateConnectionDetails(){
+ const target=$('connection-details');
+ if(!client){target.textContent=teacher?'Teacher room view. No runner connection is active.':'No runner connection.';return;}
+ const age=Math.max(0,Math.floor((performance.now()-client.lastGood)/1000));
+ const state=client.recovering?'Reconnecting automatically':client.needsReconnect?'Reconnect needed':client.predictionHeld?'Waiting for the server':'Connected';
+ target.textContent=`${state}. Last accepted update ${age}s ago. ${client.busy?'Request in progress.':'No request waiting.'} Queued movement: ${client.pending.length}. Accepted batch: ${client.ack}. ${client.message}`;
 }
 function useClient(seat:Seat,value?:Room){
   client?.dispose();teacher=false;const next=new MultiplayerClient(seat,fetch,()=>performance.now(),()=>{if(client===next&&next.room&&view.capture().code===seat.code)displayRoom(next.room);});client=next;previousEpoch=-1;
@@ -79,7 +96,7 @@ for(const button of Array.from(document.querySelectorAll<HTMLButtonElement>('[da
 $('lock').onclick=()=>void control('lock',{locked:!room?.locked});
 play.onclick=async()=>{if(!graphicsAvailable||!graphics||!client||client.needsReconnect||client.recovering||room?.status!=='running')return;try{await graphics.canvas.requestPointerLock();graphics.canvas.focus({preventScroll:true});}catch{say('Mouse capture was blocked. Click Enter Fortress again in this game tab.');}};
 $('menu-button').onclick=release;
-$('leave').onclick=()=>{beginView(null);$('restore').hidden=!savedSeat();say('Left this view. A saved runner seat can reconnect from this tab.');void loadTeacherRooms();};
+$('leave').onclick=()=>{beginView(null);entrySteps.show('role');$('restore').hidden=!savedSeat();say('Left this view. A saved runner seat can reconnect from this tab.');void loadTeacherRooms();};
 reconnect.onclick=async()=>{if(!client)return;const current=client,ticket=view.begin(current.seat.code);reconnect.disabled=true;try{await current.reconnect();if(view.accepts(ticket)&&client===current){network.wake();say(current.needsReconnect||current.recovering?current.message:'Reconnected to the current server state. Enter the fortress when ready.');}}catch(e){if(view.accepts(ticket))say(readable(e));}finally{if(view.accepts(ticket))reconnect.disabled=false;}};
 $('restore').onclick=async()=>{const seat=savedSeat();if(!seat)return;const ticket=beginView(seat.code);useClient(seat);const current=client!;try{await current.reconnect();if(view.accepts(ticket)&&client===current)say(current.needsReconnect||current.recovering?current.message:'Saved seat reconnected.');}catch(e){if(view.accepts(ticket))say(readable(e));}};
 document.addEventListener('pointerlockchange',()=>{clearInput();lobby.hidden=locked();hud.hidden=!locked();if(locked())graphics?.canvas.focus({preventScroll:true});});
@@ -92,13 +109,13 @@ try{graphics=createFortress($('world'),()=>{appearanceWarning='A runner appearan
 function frame(now:number){if(disposed)return;raf=requestAnimationFrame(frame);const elapsed=Math.min(.1,Math.max(0,(now-last)/1000));last=now;
   if(client&&room?.status==='running'&&!document.hidden&&locked()){acc+=elapsed;while(acc>=STEP){const move=locked()?movementInput(keys):{forward:0,right:0};const input:InputFrame={...move,yaw,jump:locked()&&jump,glide:locked()&&keys.has('Space'),slide:locked()&&keys.has('KeyC')};client.predict(input);jump=false;acc-=STEP;}}else acc=0;
   if(graphicsAvailable)graphics?.render(now,own(),yaw,pitch);
-  if(room&&now-lastHud>100){lastHud=now;drawRadar(radar,room,own());$('connection').textContent=[client?.message,appearanceWarning].filter(Boolean).join(' · ');}
+  if(room&&now-lastHud>100){lastHud=now;updateConnectionDetails();drawRadar(radar,room,own());updateConnectionMessage();}
 }
 raf=requestAnimationFrame(frame);
 const network=createPumpDriver(()=>client,()=>!document.hidden);
 const teacherPoll=setInterval(async()=>{if(!teacher||!room||room.status==='ended'||teacherBusy||document.hidden)return;const ticket=view.capture(),code=room.code;teacherBusy=true;try{const result=await api<{room:Room}>('state',{code});if(view.accepts(ticket,result.room.code)&&teacher&&room?.code===code&&result.room.version>=room.version)displayRoom(result.room);}catch(e){if(view.accepts(ticket))say(readable(e));}finally{if(view.accepts(ticket)){teacherBusy=false;if(room)displayRoom(room);}}},500);
 $('restore').hidden=!savedSeat();
-void api<{signedIn:boolean}>('me').then(result=>{signedIn=result.signedIn;$('teacher-signin').hidden=signedIn;$('teacher-create').hidden=!signedIn;if(signedIn){($('teacher-setup') as HTMLDetailsElement).open=true;void loadTeacherRooms();}}).catch(()=>say('Multiplayer service unavailable. Solo courses remain available.'));
+void api<{signedIn:boolean}>('me').then(result=>{signedIn=result.signedIn;$('teacher-signin').hidden=signedIn;$('teacher-create').hidden=!signedIn;if(signedIn)void loadTeacherRooms();}).catch(()=>say('Multiplayer service unavailable. Solo courses remain available.'));
 window.addEventListener('pagehide',()=>{disposed=true;cancelAnimationFrame(raf);graphicsAvailable=false;release();network.stop();clearInterval(teacherPoll);client?.dispose();graphics?.dispose();});
 // BFCache can restore DOM after pagehide disposed networking/render resources.
 // Reload is the safe lifecycle boundary; saved tab credentials enable reconnect.

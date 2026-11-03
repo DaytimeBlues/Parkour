@@ -28,3 +28,13 @@ body:has(#room-panel:not([hidden])) #solo-link{display:none}
 @media(min-width:1500px){#lobby{padding-left:24px;padding-right:24px}}
 @media(max-width:760px){#lobby{display:grid;grid-template-columns:minmax(0,460px);padding:24px 20px;gap:20px}.intro h1{font-size:30px}.game-description{font-size:15px}.game-facts{font-size:12px}.panel{padding:24px}.preview-note{text-align:center}.intro .how-to{display:block}}
 @media(max-width:380px){#lobby{padding:20px 16px}.panel{padding:20px}.game-facts{font-size:12px;gap:8px 12px}}
+
+/* Sequential entry: whole pages are hidden rather than layered. */
+.entry-options{display:grid;gap:14px;margin:24px 0 8px}.entry-options button{text-align:left;min-height:96px;font-size:24px;padding:20px 24px}.entry-options span{display:block;font-size:15px;font-weight:400;line-height:1.5;margin-top:8px}
+#join-back,#teacher-back{margin:0 0 18px;padding:10px 4px;min-height:48px;font-size:16px}
+.connection-details{border-top:1px solid var(--line);padding-top:6px;margin-top:18px}.connection-details p{font-size:14px;line-height:1.65;color:var(--muted);overflow-wrap:anywhere}
+#top{display:grid;grid-template-columns:minmax(150px,1fr) auto minmax(120px,1fr)}
+#top .wordmark{grid-column:1;grid-row:1}#score{position:static;transform:none;grid-column:2;grid-row:1;gap:20px}#solo-link,#menu-button{grid-column:3;grid-row:1;justify-self:end;margin-left:0}
+.room-heading strong{font-size:clamp(38px,7vw,60px);letter-spacing:.1em;overflow-wrap:anywhere}
+@media(max-width:900px){#top{grid-template-columns:minmax(0,1fr) auto;gap:12px}#solo-link,#menu-button{grid-column:2}#score{grid-column:1/-1;grid-row:2;justify-content:center;flex-basis:auto;gap:22px;width:100%;padding:10px 0 0;border-top:1px solid #ffffff1a}#score b{font-size:22px}#clock{font-size:24px}#hud{top:155px}}
+@media(max-width:400px){#score{gap:12px}#score>span{gap:5px}.room-heading{gap:8px;flex-wrap:wrap}.room-heading strong{font-size:38px}.entry-options button{font-size:22px;padding:18px 20px}}

@@ -1,3 +1,4 @@
+import {createMenuSteps} from './ui/menu-steps';
 import { FrameProfile, profilingEnabled } from './dev/frame-profile';
 import * as THREE from 'three';
 import { Sky } from 'three/addons/objects/Sky.js';
@@ -29,6 +30,8 @@ let courseSet:CourseSet='tunnels';
 
 const $ = <T extends HTMLElement>(id:string) => document.getElementById(id) as T;
 const game=$<HTMLDivElement>('game'), overlay=$<HTMLDivElement>('overlay'), hud=$<HTMLDivElement>('hud'), start=$<HTMLButtonElement>('start'), picker=$<HTMLDivElement>('course-picker');
+const menuSteps=createMenuSteps(overlay,['mode','solo'],'mode');
+$('choose-solo').addEventListener('click',()=>menuSteps.show('solo'));
 const boostStatus=$<HTMLSpanElement>('boost-status');
 const tokenScore=$<HTMLOutputElement>('token-score'),tokenFeedback=$<HTMLSpanElement>('token-feedback'),restart=$<HTMLButtonElement>('restart');
 let tokenRun:TokenRun,tokenArt:ReturnType<typeof createTokenScene>|null=null;
@@ -73,6 +76,7 @@ let arrows:{root:THREE.Group;from:Platform;to:Platform}[]=[];
 let selected=5,phase:'ready'|'starting'|'playing'|'paused'|'finished'='ready',yaw=0,pitch=0,vy=0,elapsed=0,checkpoint=0,falls=0,grounded=false,coyote=0,jumpBuffer=0,last=performance.now(),acc=0,simulationTime=0;const keys=new GameplayKeys(),boostKeys=new BoostInputLatch(),boost=new Boost();
 const appearanceMenu=createAppearanceMenu(start.parentElement!,appearance,appearanceAssets,async value=>{await glider.setStyle(value.wing);Object.assign(appearance,value);},()=>canOpenAppearance(phase,startGate.isPending,document.pointerLockElement!==null));
 const leaderboard=createLeaderboardUI(overlay,()=>courses[selected].id);let rankedStart:Promise<boolean>|null=null,playEpoch=0,needsRankedStart=false;
+$('solo-back').addEventListener('click',()=>{pause();cancelStart();music.pause();leaderboard.lock(false);playEpoch++;if(document.pointerLockElement===renderer.domElement)document.exitPointerLock();menuSteps.show('mode');});
 function clearScene(){courseGroup.traverse(o=>{if(o instanceof THREE.Mesh){o.geometry.dispose();if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else if(o.material!==markers.arrow)o.material.dispose();}});courseGroup.clear();}
 function buildCourse(){
  glider.reset();glideLateralSpeed=0;
