@@ -42,3 +42,5 @@
 .mode-options a:hover,.mode-options a:focus-visible{background:#265973;outline:3px solid #fff;outline-offset:3px}
 .menu-back{min-width:0;min-height:48px;padding:12px 16px;margin-bottom:8px;background:#ffffff16;color:#fff;letter-spacing:0}
 @media(max-width:520px){.mode-options{grid-template-columns:1fr;gap:12px;margin:24px 0}.mode-options button,.mode-options a{min-height:120px;padding:22px}.mode-choice h1{font-size:56px}.mode-options strong{font-size:26px}}
+
+.appearance-preview-motion-label{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:13px;margin:12px 0}.appearance-preview-motion{font:inherit;color:var(--look-ink);background:#172f48;border:1px solid #799caf;border-radius:7px;padding:7px 10px;min-height:36px}

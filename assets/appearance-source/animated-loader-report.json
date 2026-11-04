@@ -1,0 +1,892 @@
+{
+  "loader": "Three 180 GLTFLoader",
+  "samplesPerClip": 121,
+  "assets": [
+    {
+      "name": "avatar-fox",
+      "bytes": 252236,
+      "triangles": 4036,
+      "meshes": 17,
+      "vertices": 2118,
+      "materials": [
+        {
+          "name": "WoodlandPalette",
+          "vertexColors": true,
+          "roughness": 0.7300000190734863,
+          "metalness": 0
+        }
+      ],
+      "clips": [
+        {
+          "name": "AvatarIdle",
+          "duration": 2,
+          "tracks": 51,
+          "samples": 121,
+          "minY": 0.00019996206219691226,
+          "maxY": 1.5975476680554666,
+          "maxLocalComponentMotion": 0.1172410249710083,
+          "loop": true,
+          "endpointError": 1.7881393432617188e-7,
+          "bounds": {
+            "min": [
+              -0.34300003200769424,
+              0.00019996206219691226,
+              -0.8226379137145953
+            ],
+            "max": [
+              0.4110774026171334,
+              1.5975476680554666,
+              1.4115984563057935
+            ]
+          }
+        },
+        {
+          "name": "AvatarRun",
+          "duration": 0.699999988079071,
+          "tracks": 51,
+          "samples": 121,
+          "minY": 0.0001394003701945118,
+          "maxY": 1.5922504693737032,
+          "maxLocalComponentMotion": 0.4174815586847874,
+          "loop": true,
+          "endpointError": 1.1920928955078125e-7,
+          "bounds": {
+            "min": [
+              -0.34300003200769424,
+              0.0001394003701945118,
+              -0.8231044208028846
+            ],
+            "max": [
+              0.4109160618154371,
+              1.5922504693737032,
+              1.4115955650440586
+            ]
+          }
+        },
+        {
+          "name": "AvatarGlide",
+          "duration": 1.600000023841858,
+          "tracks": 51,
+          "samples": 121,
+          "minY": 0.1179999760651439,
+          "maxY": 1.595582636745151,
+          "maxLocalComponentMotion": 0.05080660412841288,
+          "loop": true,
+          "endpointError": 1.7881393432617188e-7,
+          "bounds": {
+            "min": [
+              -0.34300003200769424,
+              0.1179999760651439,
+              -0.8482537010218807
+            ],
+            "max": [
+              0.4110774026171334,
+              1.595582636745151,
+              1.425672987779006
+            ]
+          }
+        },
+        {
+          "name": "AvatarJump",
+          "duration": 0.4000000059604645,
+          "tracks": 51,
+          "samples": 121,
+          "minY": 0.00019998254179440234,
+          "maxY": 1.6077701044372297,
+          "maxLocalComponentMotion": 0.3245736360549927,
+          "loop": false,
+          "endpointError": 0.3245736360549927,
+          "bounds": {
+            "min": [
+              -0.34300003200769424,
+              0.00019998254179440234,
+              -0.8244797007889614
+            ],
+            "max": [
+              0.4110774026171334,
+              1.6077701044372297,
+              1.4115923267828876
+            ]
+          }
+        },
+        {
+          "name": "AvatarLand",
+          "duration": 0.25,
+          "tracks": 51,
+          "samples": 121,
+          "minY": 0.00002396218700871644,
+          "maxY": 1.5725947320461273,
+          "maxLocalComponentMotion": 0.2704377770423889,
+          "loop": false,
+          "endpointError": 0.2704377770423889,
+          "bounds": {
+            "min": [
+              -0.34300003200769424,
+              0.00002396218700871644,
+              -0.824476926106758
+            ],
+            "max": [
+              0.4107612697558346,
+              1.5725947320461273,
+              1.4115881065741558
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "avatar-rabbit",
+      "bytes": 250632,
+      "triangles": 4008,
+      "meshes": 17,
+      "vertices": 2092,
+      "materials": [
+        {
+          "name": "WoodlandPalette",
+          "vertexColors": true,
+          "roughness": 0.7300000190734863,
+          "metalness": 0
+        }
+      ],
+      "clips": [
+        {
+          "name": "AvatarIdle",
+          "duration": 2,
+          "tracks": 51,
+          "samples": 121,
+          "minY": 0.00019996206219691226,
+          "maxY": 1.9678576700389385,
+          "maxLocalComponentMotion": 0.1172410249710083,
+          "loop": true,
+          "endpointError": 1.7881393432617188e-7,
+          "bounds": {
+            "min": [
+              -0.4017375409603119,
+              0.00019996206219691226,
+              -0.7016059171832967
+            ],
+            "max": [
+              0.40203243494033813,
+              1.9678576700389385,
+              0.7128589939809913
+            ]
+          }
+        },
+        {
+          "name": "AvatarRun",
+          "duration": 0.699999988079071,
+          "tracks": 51,
+          "samples": 121,
+          "minY": 0.00007910524297183308,
+          "maxY": 1.97488189957325,
+          "maxLocalComponentMotion": 0.46190280049891663,
+          "loop": true,
+          "endpointError": 1.1920928955078125e-7,
+          "bounds": {
+            "min": [
+              -0.4017375409603119,
+              0.00007910524297183308,
+              -0.7344332096896661
+            ],
+            "max": [
+              0.40203243494033813,
+              1.97488189957325,
+              0.7365570095496392
+            ]
+          }
+        },
+        {
+          "name": "AvatarGlide",
+          "duration": 1.600000023841858,
+          "tracks": 51,
+          "samples": 121,
+          "minY": 0.1179999760651439,
+          "maxY": 1.965833249194148,
+          "maxLocalComponentMotion": 0.03620460998661146,
+          "loop": true,
+          "endpointError": 1.7881393432617188e-7,
+          "bounds": {
+            "min": [
+              -0.4017375409603119,
+              0.1179999760651439,
+              -0.7271733890927917
+            ],
+            "max": [
+              0.40203243494033813,
+              1.965833249194148,
+              0.7295388472240127
+            ]
+          }
+        },
+        {
+          "name": "AvatarJump",
+          "duration": 0.4000000059604645,
+          "tracks": 51,
+          "samples": 121,
+          "minY": 0.00019998254179440234,
+          "maxY": 1.9761105945104476,
+          "maxLocalComponentMotion": 0.3245736360549927,
+          "loop": false,
+          "endpointError": 0.3245736360549927,
+          "bounds": {
+            "min": [
+              -0.4017375409603119,
+              0.00019998254179440234,
+              -0.7033395538787697
+            ],
+            "max": [
+              0.40203243494033813,
+              1.9761105945104476,
+              0.7128553892661569
+            ]
+          }
+        },
+        {
+          "name": "AvatarLand",
+          "duration": 0.25,
+          "tracks": 51,
+          "samples": 121,
+          "minY": 0.00002396218700871644,
+          "maxY": 1.9438576698303223,
+          "maxLocalComponentMotion": 0.2704377770423889,
+          "loop": false,
+          "endpointError": 0.2704377770423889,
+          "bounds": {
+            "min": [
+              -0.4017375409603119,
+              0.00002396218700871644,
+              -0.7033368946478801
+            ],
+            "max": [
+              0.40203243494033813,
+              1.9438576698303223,
+              0.7128368764423648
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "wings-angel",
+      "bytes": 36292,
+      "triangles": 1124,
+      "meshes": 6,
+      "vertices": 622,
+      "materials": [
+        {
+          "name": "Accent_angel",
+          "vertexColors": false,
+          "roughness": 0.4300000071525574,
+          "metalness": 0.3799999952316284
+        },
+        {
+          "name": "Soft_angel",
+          "vertexColors": false,
+          "roughness": 0.7699999809265137,
+          "metalness": 0
+        },
+        {
+          "name": "Wing_angel",
+          "vertexColors": false,
+          "roughness": 0.7300000190734863,
+          "metalness": 0
+        }
+      ],
+      "clips": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": 0.08176691830158234,
+          "maxY": 1.2947057485580444,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -1.977122776210308,
+              0.08176691830158234,
+              -0.18860000371932983
+            ],
+            "max": [
+              1.977122776210308,
+              1.2947057485580444,
+              1.8250814646224687
+            ]
+          }
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": 0.08176691830158234,
+          "maxY": 1.2947057485580444,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -1.977122776210308,
+              0.08176691830158234,
+              -0.18860000371932983
+            ],
+            "max": [
+              1.977122776210308,
+              1.2947057485580444,
+              1.8250814646224687
+            ]
+          }
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.600000023841858,
+          "tracks": 6,
+          "samples": 121,
+          "minY": 0.044422932498042494,
+          "maxY": 1.3780838065050518,
+          "maxLocalComponentMotion": 0.029467873167964075,
+          "loop": true,
+          "endpointError": 9.429780400946323e-18,
+          "bounds": {
+            "min": [
+              -2.0420022624966427,
+              0.044422932498042494,
+              -0.18933902666415597
+            ],
+            "max": [
+              2.0420022624966427,
+              1.3780838065050518,
+              0.18733863132660655
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "wings-devil",
+      "bytes": 33388,
+      "triangles": 772,
+      "meshes": 6,
+      "vertices": 606,
+      "materials": [
+        {
+          "name": "Accent_devil",
+          "vertexColors": false,
+          "roughness": 0.6399999856948853,
+          "metalness": 0
+        },
+        {
+          "name": "Soft_devil",
+          "vertexColors": false,
+          "roughness": 0.7699999809265137,
+          "metalness": 0
+        },
+        {
+          "name": "Wing_devil",
+          "vertexColors": false,
+          "roughness": 0.7300000190734863,
+          "metalness": 0
+        }
+      ],
+      "clips": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.13265980780124664,
+          "maxY": 1.2904900312423706,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -1.7435477589029322,
+              -0.13265980780124664,
+              -0.08366061002016068
+            ],
+            "max": [
+              1.7435477589029322,
+              1.2904900312423706,
+              1.573041265820066
+            ]
+          }
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.13265980780124664,
+          "maxY": 1.2904900312423706,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -1.7435477587966948,
+              -0.13265980780124664,
+              -0.08366061002016068
+            ],
+            "max": [
+              1.7435477587966948,
+              1.2904900312423706,
+              1.573041265820066
+            ]
+          }
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.600000023841858,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.17118201020558513,
+          "maxY": 1.314489356705034,
+          "maxLocalComponentMotion": 0.025197413070192975,
+          "loop": true,
+          "endpointError": 8.058175978990494e-18,
+          "bounds": {
+            "min": [
+              -1.7611615890262058,
+              -0.17118201020558513,
+              -0.09199637977544728
+            ],
+            "max": [
+              1.7611615890262058,
+              1.314489356705034,
+              0.048884805017853014
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "wings-parakeet",
+      "bytes": 40496,
+      "triangles": 1124,
+      "meshes": 16,
+      "vertices": 622,
+      "materials": [
+        {
+          "name": "Accent_parakeet",
+          "vertexColors": false,
+          "roughness": 0.699999988079071,
+          "metalness": 0
+        },
+        {
+          "name": "Feather_0",
+          "vertexColors": false,
+          "roughness": 0.699999988079071,
+          "metalness": 0
+        },
+        {
+          "name": "Feather_1",
+          "vertexColors": false,
+          "roughness": 0.699999988079071,
+          "metalness": 0
+        },
+        {
+          "name": "Feather_2",
+          "vertexColors": false,
+          "roughness": 0.699999988079071,
+          "metalness": 0
+        },
+        {
+          "name": "Feather_3",
+          "vertexColors": false,
+          "roughness": 0.699999988079071,
+          "metalness": 0
+        },
+        {
+          "name": "Feather_4",
+          "vertexColors": false,
+          "roughness": 0.699999988079071,
+          "metalness": 0
+        },
+        {
+          "name": "Feather_5",
+          "vertexColors": false,
+          "roughness": 0.699999988079071,
+          "metalness": 0
+        },
+        {
+          "name": "Wing_parakeet",
+          "vertexColors": false,
+          "roughness": 0.699999988079071,
+          "metalness": 0
+        }
+      ],
+      "clips": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.02119816280901432,
+          "maxY": 1.0813977718353271,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -2.010346405208111,
+              -0.02119816280901432,
+              -0.18860000371932983
+            ],
+            "max": [
+              2.010346405208111,
+              1.0813977718353271,
+              1.8577242757362353
+            ]
+          }
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.02119816280901432,
+          "maxY": 1.0813977718353271,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -2.010346405208111,
+              -0.02119816280901432,
+              -0.18860000371932983
+            ],
+            "max": [
+              2.010346405208111,
+              1.0813977718353271,
+              1.8577242757362353
+            ]
+          }
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.600000023841858,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.07245043924844467,
+          "maxY": 1.2282912416753502,
+          "maxLocalComponentMotion": 0.03955268124166032,
+          "loop": true,
+          "endpointError": 2.4982795064818485e-17,
+          "bounds": {
+            "min": [
+              -2.0910240431429283,
+              -0.07245043924844467,
+              -0.19069154026885807
+            ],
+            "max": [
+              2.0910240431429283,
+              1.2282912416753502,
+              0.1910375497595361
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "wings-elephant",
+      "bytes": 47660,
+      "triangles": 1140,
+      "meshes": 6,
+      "vertices": 1074,
+      "materials": [
+        {
+          "name": "Accent_elephant",
+          "vertexColors": false,
+          "roughness": 0.6399999856948853,
+          "metalness": 0
+        },
+        {
+          "name": "Soft_elephant",
+          "vertexColors": false,
+          "roughness": 0.7699999809265137,
+          "metalness": 0
+        },
+        {
+          "name": "Wing_elephant",
+          "vertexColors": false,
+          "roughness": 0.8399999737739563,
+          "metalness": 0
+        }
+      ],
+      "clips": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.15187278389930725,
+          "maxY": 1.092615008354187,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -1.7024295292739684,
+              -0.15187278389930725,
+              -0.0813230574131012
+            ],
+            "max": [
+              1.7077067015769822,
+              1.092615008354187,
+              1.5257062139039714
+            ]
+          }
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.15187278389930725,
+          "maxY": 1.092615008354187,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -1.702429529612728,
+              -0.15187278389930725,
+              -0.0813230574131012
+            ],
+            "max": [
+              1.7077067013577774,
+              1.092615008354187,
+              1.5257062139039714
+            ]
+          }
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.600000023841858,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.23442038142830054,
+          "maxY": 1.1419292323346857,
+          "maxLocalComponentMotion": 0.034805210427405676,
+          "loop": true,
+          "endpointError": 1.1144285928391109e-17,
+          "bounds": {
+            "min": [
+              -1.7165966821673464,
+              -0.23442038142830054,
+              -0.10664684897050951
+            ],
+            "max": [
+              1.7220158629999798,
+              1.1419292323346857,
+              0.07934540102053589
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "wings-glow",
+      "bytes": 25548,
+      "triangles": 212,
+      "meshes": 6,
+      "vertices": 378,
+      "materials": [
+        {
+          "name": "Accent_glow",
+          "vertexColors": false,
+          "roughness": 0.6399999856948853,
+          "metalness": 0
+        },
+        {
+          "name": "Soft_glow",
+          "vertexColors": false,
+          "roughness": 0.7699999809265137,
+          "metalness": 0
+        },
+        {
+          "name": "Wing_glow",
+          "vertexColors": false,
+          "roughness": 0.3499999940395355,
+          "metalness": 0.07999999821186066
+        }
+      ],
+      "clips": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": 0.03217221051454544,
+          "maxY": 1.1749999523162842,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -2.051213452336958,
+              0.03217221051454544,
+              -0.1274999976158142
+            ],
+            "max": [
+              2.051213452336958,
+              1.1749999523162842,
+              1.843758046260873
+            ]
+          }
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": 0.03217221051454544,
+          "maxY": 1.1749999523162842,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -2.051213452351914,
+              0.03217221051454544,
+              -0.1274999976158142
+            ],
+            "max": [
+              2.051213452351914,
+              1.1749999523162842,
+              1.843758046260873
+            ]
+          }
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.600000023841858,
+          "tracks": 6,
+          "samples": 121,
+          "minY": 0.019335118187504458,
+          "maxY": 1.2273202769596776,
+          "maxLocalComponentMotion": 0.013451491728600167,
+          "loop": true,
+          "endpointError": 4.286263818611965e-18,
+          "bounds": {
+            "min": [
+              -2.0790872389999033,
+              0.019335118187504458,
+              -0.15484788846559333
+            ],
+            "max": [
+              2.0790872389999033,
+              1.2273202769596776,
+              0.1539952604153921
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "wings-dragon",
+      "bytes": 41264,
+      "triangles": 1172,
+      "meshes": 6,
+      "vertices": 834,
+      "materials": [
+        {
+          "name": "Accent_dragon",
+          "vertexColors": false,
+          "roughness": 0.4300000071525574,
+          "metalness": 0.3799999952316284
+        },
+        {
+          "name": "Soft_dragon",
+          "vertexColors": false,
+          "roughness": 0.7699999809265137,
+          "metalness": 0
+        },
+        {
+          "name": "Wing_dragon",
+          "vertexColors": false,
+          "roughness": 0.7300000190734863,
+          "metalness": 0
+        }
+      ],
+      "clips": [
+        {
+          "name": "WingOpen",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.1360466480255127,
+          "maxY": 1.2858527898788452,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -2.0160863564238585,
+              -0.1360466480255127,
+              -0.08369371294975281
+            ],
+            "max": [
+              2.0163075601473297,
+              1.2858527898788452,
+              1.8324163735517711
+            ]
+          }
+        },
+        {
+          "name": "WingFold",
+          "duration": 0.3333333432674408,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.1360466480255127,
+          "maxY": 1.2858527898788452,
+          "maxLocalComponentMotion": 0.613116979598999,
+          "loop": false,
+          "endpointError": 0.613116979598999,
+          "bounds": {
+            "min": [
+              -2.01608635640458,
+              -0.1360466480255127,
+              -0.08369371294975281
+            ],
+            "max": [
+              2.016307560113412,
+              1.2858527898788452,
+              1.8324163735517711
+            ]
+          }
+        },
+        {
+          "name": "WingGlide",
+          "duration": 1.600000023841858,
+          "tracks": 6,
+          "samples": 121,
+          "minY": -0.17416042487867373,
+          "maxY": 1.3085253887562394,
+          "maxLocalComponentMotion": 0.02039259129481829,
+          "loop": true,
+          "endpointError": 6.515121004290187e-18,
+          "bounds": {
+            "min": [
+              -2.043590276949889,
+              -0.17416042487867373,
+              -0.09246278093157026
+            ],
+            "max": [
+              2.0437752339147326,
+              1.3085253887562394,
+              0.05045210932593367
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Standalone asset import and precise vertices, not browser screenshots or target-device FPS.",
+    "Rigid overlapping limb masses, no skin deformation or runtime IK."
+  ]
+}

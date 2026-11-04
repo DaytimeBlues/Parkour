@@ -11,33 +11,65 @@
     "bytes": 9803,
     "sha256": "9c67490c3b1717afd87d4271bd88fa53189494e949b0ea61018f5d00fb617ff7"
   },
+  "pass-a/avatar-fox.blend": {
+    "bytes": 694764,
+    "sha256": "52222fe7dd801ebf3d40b0fd1739b661e56728da890e105113a97d75a0f3ec29"
+  },
   "pass-a/avatar-fox.glb": {
     "bytes": 98544,
     "sha256": "2d9060b758f1faa8d66ad627cfdd6bd1433030f47a50edccdc858d61a6be8bd0"
+  },
+  "pass-a/avatar-rabbit.blend": {
+    "bytes": 716564,
+    "sha256": "4a5a9599b6e71504e385bb96ccaf05fbb861675768508bfd53f4860fa0d7725b"
   },
   "pass-a/avatar-rabbit.glb": {
     "bytes": 134204,
     "sha256": "8f822ca2db8241f73046912bff56a161e575652800700935f547cf3a24a7295a"
   },
+  "pass-a/wings-angel.blend": {
+    "bytes": 513620,
+    "sha256": "8ef3b97d7d6ad183b2c3d2b5161309be5a61264d4758f6fc25ccf9ea84a6ada2"
+  },
   "pass-a/wings-angel.glb": {
     "bytes": 29796,
     "sha256": "76b69ad656dc09781ef0eea540cd4d1e82e60ce2e2a7999855658eac92797bfa"
+  },
+  "pass-a/wings-devil.blend": {
+    "bytes": 513612,
+    "sha256": "4924cd7abec975fe4466d615948f5ca5ef94d3bad0555a27599ace90a9ef8bac"
   },
   "pass-a/wings-devil.glb": {
     "bytes": 29592,
     "sha256": "5f8c9299ae01d015a9a61a210697140101250433805dc7b56368ca38f920f565"
   },
+  "pass-a/wings-dragon.blend": {
+    "bytes": 516476,
+    "sha256": "3fe1106c3f1b03dbfd597e1d999c08b3d80e011eb355a84becb662f5403e5237"
+  },
   "pass-a/wings-dragon.glb": {
     "bytes": 33336,
     "sha256": "bacf4b168669a5ccad487b2859ca40f99101dba8128feb6e4c31955838a41087"
+  },
+  "pass-a/wings-elephant.blend": {
+    "bytes": 507096,
+    "sha256": "4d71bbc541a19d169dd482a0612b9805cb11e3d8377a82c41bceaad61441f49b"
   },
   "pass-a/wings-elephant.glb": {
     "bytes": 20876,
     "sha256": "25cf70e7a0369582c906ad617e49eb8e83d5039395b22de317859587dab91fa4"
   },
+  "pass-a/wings-glow.blend": {
+    "bytes": 516532,
+    "sha256": "f4120051c91ad1beacd2d014922c7d5198ff1034117862b915e860be0b64d59b"
+  },
   "pass-a/wings-glow.glb": {
     "bytes": 33028,
     "sha256": "9a53da3d32102a3f712f8099c318f8036653a2913d73904dc16e331fc75ccbfc"
+  },
+  "pass-a/wings-parakeet.blend": {
+    "bytes": 705456,
+    "sha256": "70f19d85e8cd77496bdd34f80b30bdbcec31d2a7f1fa9f007ef52585d3291f63"
   },
   "pass-a/wings-parakeet.glb": {
     "bytes": 37468,

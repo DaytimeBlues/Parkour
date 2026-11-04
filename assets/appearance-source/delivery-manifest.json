@@ -1,0 +1,214 @@
+{
+  "revision": "readiness-reconstruction-20261104",
+  "originalCheckpointRecovered": false,
+  "editableNativeIdentity": "Regenerated equivalents, not original native bytes",
+  "missingOriginals": [
+    "Original16c full source/checkpoint",
+    "Original eight native .blend container bytes",
+    "Original v4 preview GIFs and delivery archive"
+  ],
+  "legacyPreviewNotice": "Existing v3 still previews are older evidence, not visual acceptance for v4b motion.",
+  "files": [
+    {
+      "path": "assets/appearance-source/INTEGRATION.md",
+      "bytes": 1230,
+      "sha256": "09d4fa92e06d5b1d404891f524ff6f7ebf3b9891b9dd2d66dfbb2130c70c03ab"
+    },
+    {
+      "path": "assets/appearance-source/WOODLAND-V3.md",
+      "bytes": 7529,
+      "sha256": "6e231072fce66d3f1afe70d5c0138d192f4caa1a2545b4520eb195b16f7dba41"
+    },
+    {
+      "path": "assets/appearance-source/WOODLAND-V4-ANIMATED.md",
+      "bytes": 11470,
+      "sha256": "1dd495b8ba4231d0865d1bdc2eb23a13a1bff1e81d6dd4e4fd6c5afb469b0e82"
+    },
+    {
+      "path": "assets/appearance-source/animated-determinism.json",
+      "bytes": 3820,
+      "sha256": "aaefb4348acd2c7d173386f6c3a0f7f36055b5cd460de02cee6cc7ba7c3081bb"
+    },
+    {
+      "path": "assets/appearance-source/animated-loader-report.json",
+      "bytes": 24146,
+      "sha256": "8ee94322a078d2db7a85500fc5d842fc42a72b4b5184bef8b8bd27be029d9d06"
+    },
+    {
+      "path": "assets/appearance-source/assemble_animated_previews.py",
+      "bytes": 2843,
+      "sha256": "cb2328d1cabc64f0f34f8f020a3db416bfdbd95c4e1619c3992d9b49c6c0e34a"
+    },
+    {
+      "path": "assets/appearance-source/attached-contact-sheet.png",
+      "bytes": 1187005,
+      "sha256": "cc1fdece5a8fbb56d16049901a197336bfdd55099937eda2b4a31ac39656c5d1"
+    },
+    {
+      "path": "assets/appearance-source/avatar-fox.blend",
+      "bytes": 3302244,
+      "sha256": "a0edb764dfd8f30b6e0662b576a8b4a7661f86e040e75e60d857bcd9e1e486e2"
+    },
+    {
+      "path": "assets/appearance-source/avatar-rabbit.blend",
+      "bytes": 3304076,
+      "sha256": "01ff2676a85e7ed811e9f9446c3b3bce754dbc10dcdb89667438e7f06010035e"
+    },
+    {
+      "path": "assets/appearance-source/avatars-contact-sheet.png",
+      "bytes": 409753,
+      "sha256": "93be9cf90b4094486fcb1cc13afb3656292d2587e4271f2ff82fb5b22c312a69"
+    },
+    {
+      "path": "assets/appearance-source/compare_animated_exports.mjs",
+      "bytes": 2814,
+      "sha256": "3f03efe2ca5cff13c5dce34e0d542deb5ea55408337e16d516528061491c4557"
+    },
+    {
+      "path": "assets/appearance-source/determinism-dependencies.json",
+      "bytes": 2556,
+      "sha256": "6d9f192be4acc238ad3241a61bb888af3966b00a4593bad71241307a8777cbd7"
+    },
+    {
+      "path": "assets/appearance-source/generate_animated_assets.py",
+      "bytes": 28518,
+      "sha256": "ce7bee1bc3850d9bfd73579a76dd5a7c069f07df17fef7d12d53e6e0d381f2e4"
+    },
+    {
+      "path": "assets/appearance-source/generate_assets.py",
+      "bytes": 9098,
+      "sha256": "07a5b62e576d9b1115774ea7502fe25b69b411b1916a218415cdbba56d41e98c"
+    },
+    {
+      "path": "assets/appearance-source/generate_refined_assets.py",
+      "bytes": 21298,
+      "sha256": "f08be95a073ac3606328d87727883f7bfabd98d332d673de2424741925751831"
+    },
+    {
+      "path": "assets/appearance-source/hash-manifest.json",
+      "bytes": 6615,
+      "sha256": "ecebbe8b56b50f43b55cd96c1588dc10d9ac64d0544862ccf42555beec39653e"
+    },
+    {
+      "path": "assets/appearance-source/loader-report.json",
+      "bytes": 9939,
+      "sha256": "b874d57930b4da2f88d293e2a036b47a10f561ed52f23896c467149f852e1e34"
+    },
+    {
+      "path": "assets/appearance-source/reexport_animated_native.py",
+      "bytes": 790,
+      "sha256": "d7de59a5af9124043e08b8f71d8d51189a3e886c5f0b4c593cc3095b72f5eaf6"
+    },
+    {
+      "path": "assets/appearance-source/refined-manifest.json",
+      "bytes": 26384,
+      "sha256": "05faf5deb41c15bcd271bc0151f9cf1b2dcf10470edf659b2cc7e4988c2ce0c2"
+    },
+    {
+      "path": "assets/appearance-source/render_animated_previews.py",
+      "bytes": 4488,
+      "sha256": "13d60001cfccc6073c297c57b61e7d32cc180a829d46922e762a4b80f45518b9"
+    },
+    {
+      "path": "assets/appearance-source/render_attached_previews.py",
+      "bytes": 1957,
+      "sha256": "aa3e15415286cc2ab47dd66fca5df3012e347b20376111ac0ed893c408089879"
+    },
+    {
+      "path": "assets/appearance-source/render_previews.py",
+      "bytes": 1863,
+      "sha256": "7bd579247fa8289dae00b289e7a09156005da9bbdc373e646dca7e07ff88c1b9"
+    },
+    {
+      "path": "assets/appearance-source/validate_animated_loader.mjs",
+      "bytes": 5613,
+      "sha256": "a97d820fca0aa487f246f7dfc88bd4a873f253c3f3f3d8478b36074ed378691e"
+    },
+    {
+      "path": "assets/appearance-source/validate_loader.mjs",
+      "bytes": 2183,
+      "sha256": "6c29890eef686e19f7890c24d21731896339ec8338d31794dd1ba2b8b5916fd9"
+    },
+    {
+      "path": "assets/appearance-source/wings-angel.blend",
+      "bytes": 656528,
+      "sha256": "cfd73c989285d3c8d5f59b1a03ada16a5707019313dd131955699ae2a90634d7"
+    },
+    {
+      "path": "assets/appearance-source/wings-contact-sheet.png",
+      "bytes": 864044,
+      "sha256": "05c599af75d60b176bd691f3ee9147c67cc34197efdb0b3165204e474e28a3cb"
+    },
+    {
+      "path": "assets/appearance-source/wings-devil.blend",
+      "bytes": 646192,
+      "sha256": "d0a157bda10f8dcea5ba977b49d24faaab7f9e7f8bb6863285c29ec33db61d47"
+    },
+    {
+      "path": "assets/appearance-source/wings-dragon.blend",
+      "bytes": 659720,
+      "sha256": "ffdc838ef1cc6e65f2c48c70f21266289e0d9ecd7327f39d0c3c1499c87ad114"
+    },
+    {
+      "path": "assets/appearance-source/wings-elephant.blend",
+      "bytes": 663900,
+      "sha256": "b7c638295e2b913276492783991561124158e21a5ba11d3e2b42a3ca1f396e44"
+    },
+    {
+      "path": "assets/appearance-source/wings-glow.blend",
+      "bytes": 626928,
+      "sha256": "0d2bf23267f7b3fe2cf4d942fb01d50be705a2d6d772b5034f1e417426002aa0"
+    },
+    {
+      "path": "assets/appearance-source/wings-parakeet.blend",
+      "bytes": 816580,
+      "sha256": "dc869c8b998eb0f75f3137729d18dd50b3bda9e90cd93945725f5853ee396def"
+    },
+    {
+      "path": "public/models/appearance/avatar-fox.glb",
+      "bytes": 252236,
+      "sha256": "3b96a4a4e1038c3d413a9938a7cb4a6e1ed6721f7234a1c5bc051239ff43eb23"
+    },
+    {
+      "path": "public/models/appearance/avatar-rabbit.glb",
+      "bytes": 250632,
+      "sha256": "7da8b11a540888b39ff50a9fb89df577bdb25939dfb33b16a660c21193497415"
+    },
+    {
+      "path": "public/models/appearance/wings-angel.glb",
+      "bytes": 36292,
+      "sha256": "93ae41490a60e1b10efd832f7cb80002479240f0b173cf0a2e699ee7112ee0ce"
+    },
+    {
+      "path": "public/models/appearance/wings-devil.glb",
+      "bytes": 33388,
+      "sha256": "4a6b2950740ab3e21fce3d64ebbc578eda66a717dc023c04f74f05324fe88c2f"
+    },
+    {
+      "path": "public/models/appearance/wings-dragon.glb",
+      "bytes": 41264,
+      "sha256": "f3a9ac1fd3652f911fdb038a5ca53f10b50722ba479287ae06ab8350a9e71ac9"
+    },
+    {
+      "path": "public/models/appearance/wings-elephant.glb",
+      "bytes": 47660,
+      "sha256": "714317d5ea6c680fdad0819a6c92279adb63db56a4e094223e81804002979a6b"
+    },
+    {
+      "path": "public/models/appearance/wings-glow.glb",
+      "bytes": 25548,
+      "sha256": "efb1ad9c817c0b973d9a4722c2d8ac7283bb56e5cb3ce5bf21044f4a650d5dcc"
+    },
+    {
+      "path": "public/models/appearance/wings-parakeet.glb",
+      "bytes": 40496,
+      "sha256": "eb0ea2d3375a64e8d1b6fdd051e10e96803b6c1735a131ef895cc4ff7eebed96"
+    },
+    {
+      "path": "assets/appearance-source/v4-glb-sha256.txt",
+      "bytes": 663,
+      "sha256": "b626d0c2c9ccd9862bdbfe7d06ad2bbf3bfd88998b5401f9cf736a66b513cb60"
+    }
+  ],
+  "sourceAudience": "Reviewed bounded public source projection; private project history, QA, actual hosting configuration and audio excluded"
+}

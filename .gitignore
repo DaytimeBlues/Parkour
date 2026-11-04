@@ -20,3 +20,5 @@ dist
 *.db-*
 *.sqlite3
 *.sqlite3-*
+
+.readiness-work

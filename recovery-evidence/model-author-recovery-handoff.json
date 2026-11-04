@@ -1,0 +1,121 @@
+{
+  "recordType": "public-source-recovery-identity",
+  "originalCheckpointRecovered": false,
+  "editableNativeIdentity": "Regenerated equivalents, not original native bytes",
+  "byteIdenticalOriginalRuntimeAssets": [
+    {
+      "name": "avatar-fox.glb",
+      "expectedOriginalSha256": "3b96a4a4e1038c3d413a9938a7cb4a6e1ed6721f7234a1c5bc051239ff43eb23",
+      "actualRegeneratedSha256": "3b96a4a4e1038c3d413a9938a7cb4a6e1ed6721f7234a1c5bc051239ff43eb23",
+      "matchesOriginalBytes": true,
+      "bytes": 252236
+    },
+    {
+      "name": "avatar-rabbit.glb",
+      "expectedOriginalSha256": "7da8b11a540888b39ff50a9fb89df577bdb25939dfb33b16a660c21193497415",
+      "actualRegeneratedSha256": "7da8b11a540888b39ff50a9fb89df577bdb25939dfb33b16a660c21193497415",
+      "matchesOriginalBytes": true,
+      "bytes": 250632
+    },
+    {
+      "name": "wings-angel.glb",
+      "expectedOriginalSha256": "93ae41490a60e1b10efd832f7cb80002479240f0b173cf0a2e699ee7112ee0ce",
+      "actualRegeneratedSha256": "93ae41490a60e1b10efd832f7cb80002479240f0b173cf0a2e699ee7112ee0ce",
+      "matchesOriginalBytes": true,
+      "bytes": 36292
+    },
+    {
+      "name": "wings-devil.glb",
+      "expectedOriginalSha256": "4a6b2950740ab3e21fce3d64ebbc578eda66a717dc023c04f74f05324fe88c2f",
+      "actualRegeneratedSha256": "4a6b2950740ab3e21fce3d64ebbc578eda66a717dc023c04f74f05324fe88c2f",
+      "matchesOriginalBytes": true,
+      "bytes": 33388
+    },
+    {
+      "name": "wings-dragon.glb",
+      "expectedOriginalSha256": "f3a9ac1fd3652f911fdb038a5ca53f10b50722ba479287ae06ab8350a9e71ac9",
+      "actualRegeneratedSha256": "f3a9ac1fd3652f911fdb038a5ca53f10b50722ba479287ae06ab8350a9e71ac9",
+      "matchesOriginalBytes": true,
+      "bytes": 41264
+    },
+    {
+      "name": "wings-elephant.glb",
+      "expectedOriginalSha256": "714317d5ea6c680fdad0819a6c92279adb63db56a4e094223e81804002979a6b",
+      "actualRegeneratedSha256": "714317d5ea6c680fdad0819a6c92279adb63db56a4e094223e81804002979a6b",
+      "matchesOriginalBytes": true,
+      "bytes": 47660
+    },
+    {
+      "name": "wings-glow.glb",
+      "expectedOriginalSha256": "efb1ad9c817c0b973d9a4722c2d8ac7283bb56e5cb3ce5bf21044f4a650d5dcc",
+      "actualRegeneratedSha256": "efb1ad9c817c0b973d9a4722c2d8ac7283bb56e5cb3ce5bf21044f4a650d5dcc",
+      "matchesOriginalBytes": true,
+      "bytes": 25548
+    },
+    {
+      "name": "wings-parakeet.glb",
+      "expectedOriginalSha256": "eb0ea2d3375a64e8d1b6fdd051e10e96803b6c1735a131ef895cc4ff7eebed96",
+      "actualRegeneratedSha256": "eb0ea2d3375a64e8d1b6fdd051e10e96803b6c1735a131ef895cc4ff7eebed96",
+      "matchesOriginalBytes": true,
+      "bytes": 40496
+    }
+  ],
+  "regeneratedEditableNativeIdentity": [
+    {
+      "name": "avatar-fox.blend",
+      "expectedOriginalSha256": "aa91812088efb056873fe3154ca4446042e48dd0dd3f6e8bde4cc9086e17de36",
+      "actualRegeneratedSha256": "a0edb764dfd8f30b6e0662b576a8b4a7661f86e040e75e60d857bcd9e1e486e2",
+      "matchesOriginalBytes": false,
+      "bytes": 3302244
+    },
+    {
+      "name": "avatar-rabbit.blend",
+      "expectedOriginalSha256": "11c5030b9b4310db333826b4ad1436a4ac43857a1ec71c3a5e53054492918654",
+      "actualRegeneratedSha256": "01ff2676a85e7ed811e9f9446c3b3bce754dbc10dcdb89667438e7f06010035e",
+      "matchesOriginalBytes": false,
+      "bytes": 3304076
+    },
+    {
+      "name": "wings-angel.blend",
+      "expectedOriginalSha256": "c17b3679901d01267f33b8c5c1f5ccfef3f687c0892b8ca8a5f592d98c8061c4",
+      "actualRegeneratedSha256": "cfd73c989285d3c8d5f59b1a03ada16a5707019313dd131955699ae2a90634d7",
+      "matchesOriginalBytes": false,
+      "bytes": 656528
+    },
+    {
+      "name": "wings-devil.blend",
+      "expectedOriginalSha256": "10a2a8ebaf4fe0112143081647a368d048a215396558f561ed8c21bc9203af9c",
+      "actualRegeneratedSha256": "d0a157bda10f8dcea5ba977b49d24faaab7f9e7f8bb6863285c29ec33db61d47",
+      "matchesOriginalBytes": false,
+      "bytes": 646192
+    },
+    {
+      "name": "wings-dragon.blend",
+      "expectedOriginalSha256": "5b2ed8cf95704c1c1db61322459875664971e106e06c5bb32a292ee81c2211b8",
+      "actualRegeneratedSha256": "ffdc838ef1cc6e65f2c48c70f21266289e0d9ecd7327f39d0c3c1499c87ad114",
+      "matchesOriginalBytes": false,
+      "bytes": 659720
+    },
+    {
+      "name": "wings-elephant.blend",
+      "expectedOriginalSha256": "342dc83f4688da061a90b71477f79312901584bd70b4350ab5be7ea6035687b3",
+      "actualRegeneratedSha256": "b7c638295e2b913276492783991561124158e21a5ba11d3e2b42a3ca1f396e44",
+      "matchesOriginalBytes": false,
+      "bytes": 663900
+    },
+    {
+      "name": "wings-glow.blend",
+      "expectedOriginalSha256": "917e72cbc9d901bec826438f579a6fe501b1400ac01d88b9bccecc9ebb144641",
+      "actualRegeneratedSha256": "0d2bf23267f7b3fe2cf4d942fb01d50be705a2d6d772b5034f1e417426002aa0",
+      "matchesOriginalBytes": false,
+      "bytes": 626928
+    },
+    {
+      "name": "wings-parakeet.blend",
+      "expectedOriginalSha256": "45e10d317f02ba4860b8bc9bbd2831acb9c2b83c3aac7f38b562ec35be92a9b1",
+      "actualRegeneratedSha256": "dc869c8b998eb0f75f3137729d18dd50b3bda9e90cd93945725f5853ee396def",
+      "matchesOriginalBytes": false,
+      "bytes": 816580
+    }
+  ]
+}

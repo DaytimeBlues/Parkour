@@ -4,6 +4,7 @@ import {clone} from 'three/addons/utils/SkeletonUtils.js';
 import {batchParakeetWings} from './parakeet-batching.ts';
 import {batchRigidAvatar} from './avatar-batching.ts';
 import type {CharacterKind,WingStyle} from '../simulation/appearance.ts';
+import {AvatarMotion,type AvatarMotionFrame,type AvatarClipName} from './avatar-motion.ts';
 export type AppearanceModel={root:THREE.Object3D;animations:THREE.AnimationClip[];dispose:()=>void};
 /** Templates own GPU resources; clones own transforms/mixers only. One application-lifetime cache. */
 export class AppearanceAssets{
@@ -21,12 +22,32 @@ export class AppearanceAssets{
  async dispose(){if(this.disposed)return;this.disposed=true;const ready=await Promise.allSettled([...this.pending.values()]);disposeTemplates(ready.flatMap(r=>r.status==='fulfilled'?[r.value]:[]));this.pending.clear();}
 }
 function disposeTemplates(templates:GLTF[]){const geometry=new Set<THREE.BufferGeometry>(),material=new Set<THREE.Material>(),texture=new Set<THREE.Texture>();for(const t of templates)t.scene.traverse(o=>{if(o instanceof THREE.Mesh){geometry.add(o.geometry);for(const m of(Array.isArray(o.material)?o.material:[o.material])){material.add(m);for(const value of Object.values(m))if(value instanceof THREE.Texture)texture.add(value);}}});geometry.forEach(g=>g.dispose());material.forEach(m=>m.dispose());texture.forEach(t=>t.dispose());}
-/** Samples the authored Blender deployment; no root motion or gameplay writes. */
-export function wingAnimator(model:AppearanceModel){const clip=model.animations.find(c=>c.name==='WingOpen');if(!clip||clip.duration<=0)throw new Error('WingOpen animation invalid');const mixer=new THREE.AnimationMixer(model.root),action=mixer.clipAction(clip);action.setLoop(THREE.LoopOnce,1);action.clampWhenFinished=true;action.play();action.paused=true;
- return{setDeployment(value:number){action.time=Math.max(0,Math.min(1,Number.isFinite(value)?value:0))*clip.duration;mixer.update(0);},dispose(){mixer.stopAllAction();mixer.uncacheRoot(model.root);model.dispose();}};
+/** Authored deployment and optional looping glide. No root motion/gameplay writes. */
+export function wingAnimator(model:AppearanceModel){
+ const clip=model.animations.find(c=>c.name==='WingOpen');if(!clip||clip.duration<=0)throw new Error('WingOpen animation invalid');
+ let disposed=false;
+ const mixer=new THREE.AnimationMixer(model.root),open=mixer.clipAction(clip),glideClip=model.animations.find(c=>c.name==='WingGlide'&&c.duration>0),glide=glideClip?mixer.clipAction(glideClip):undefined;
+ for(const action of [open,glide])if(action){action.setLoop(THREE.LoopOnce,1);action.clampWhenFinished=true;action.play();action.paused=true;action.setEffectiveWeight(action===open?1:0);}
+ function apply(value:number,time:number,flight:boolean,reducedMotion:boolean){
+  if(disposed)return;
+  const deployment=Math.max(0,Math.min(1,Number.isFinite(value)?value:0));
+  const blend=flight&&!reducedMotion&&glide?Math.max(0,Math.min(1,(deployment-.85)/.15)):0;
+  open.setEffectiveWeight(1-blend);open.time=deployment*clip!.duration;
+  if(glide&&glideClip){glide.setEffectiveWeight(blend);glide.time=Number.isFinite(time)?((time%glideClip.duration)+glideClip.duration)%glideClip.duration:0;}
+  mixer.update(0);
+ }
+ return{setDeployment(value:number){apply(value,0,false,true);},setFlight(value:number,time:number,reducedMotion=false){apply(value,time,true,reducedMotion);},dispose(){if(disposed)return;disposed=true;mixer.stopAllAction();mixer.uncacheRoot(model.root);model.dispose();}};
 }
 
-/** Explicit authored rest/glide poses prevent saved Blender/NLA frame state leaking into previews. */
-export function avatarAnimator(model:AppearanceModel){const mixer=new THREE.AnimationMixer(model.root);let current='';
- return{setGliding(gliding:boolean){const name=gliding?'AvatarGlide':'AvatarIdle';if(current===name)return;const clip=model.animations.find(c=>c.name===name);if(!clip)throw new Error(`${name} missing`);mixer.stopAllAction();const action=mixer.clipAction(clip);action.setLoop(THREE.LoopOnce,1);action.clampWhenFinished=true;action.play();action.paused=true;action.time=0;mixer.update(0);current=name;},dispose(){mixer.stopAllAction();mixer.uncacheRoot(model.root);model.dispose();}};
+/** Deterministic authored clip sampling shared by previews and remote avatars. */
+export function avatarAnimator(model:AppearanceModel){
+ const mixer=new THREE.AnimationMixer(model.root),motion=new AvatarMotion();let current='',disposed=false;
+ const find=(name:AvatarClipName)=>model.animations.find(c=>c.name===name)??model.animations.find(c=>c.name==='AvatarIdle');
+ function apply(name:AvatarClipName,time:number){
+  if(disposed)return;
+  const clip=find(name);if(!clip)throw new Error('AvatarIdle missing');
+  if(current!==clip.name){mixer.stopAllAction();const action=mixer.clipAction(clip);action.setLoop(THREE.LoopOnce,1);action.clampWhenFinished=true;action.play();action.paused=true;current=clip.name;}
+  mixer.clipAction(clip).time=Math.max(0,Math.min(clip.duration,Number.isFinite(time)?time:0));mixer.update(0);
+ }
+ return{setGliding(gliding:boolean){apply(gliding?'AvatarGlide':'AvatarIdle',0);},preview(name:AvatarClipName,time:number,reducedMotion=false){const clip=find(name);const duration=clip?.duration??0,clock=Number.isFinite(time)?Math.max(0,time):0;const oneShot=name==='AvatarJump'||name==='AvatarLand',phase=reducedMotion||duration<=0?0:oneShot?Math.min(duration,clock%(duration+.7)):clock%duration;apply(name,phase);return{name,time:phase};},sample(frame:AvatarMotionFrame){const pose=motion.sample(frame,name=>find(name)?.duration??0);apply(pose.name,pose.time);return pose;},reset(){motion.reset();apply('AvatarIdle',0);},dispose(){if(disposed)return;disposed=true;mixer.stopAllAction();mixer.uncacheRoot(model.root);model.dispose();}};
 }

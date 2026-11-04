@@ -72,7 +72,9 @@ export function createFortress(host:HTMLElement,onAssetError:()=>void=()=>{}){
       let a=history[0],b=a;for(let i=1;i<history.length;i++){b=history[i];if(b.time>=target)break;a=b;}
       const t=b.time>a.time?Math.max(0,Math.min(1,(target-a.time)/(b.time-a.time))):0;const p=b.player;
       avatar.root.position.set(THREE.MathUtils.lerp(a.player.x,p.x,t),THREE.MathUtils.lerp(a.player.y,p.y,t),THREE.MathUtils.lerp(a.player.z,p.z,t));
-      const angle=Math.atan2(Math.sin(p.yaw-a.player.yaw),Math.cos(p.yaw-a.player.yaw));avatar.root.rotation.y=a.player.yaw+angle*t;avatar.pose(reducedMotion.matches?0:now/1000,reducedMotion.matches?0:Math.hypot(p.vx,p.vz),p.grounded,p.gliding,p.sliding);
+      const angle=Math.atan2(Math.sin(p.yaw-a.player.yaw),Math.cos(p.yaw-a.player.yaw));avatar.root.rotation.y=a.player.yaw+angle*t;
+      // Discrete animation state follows the rendered interpolation timeline, not a future sample.
+      const motion=t<1?a.player:p;avatar.pose(now/1000,Math.hypot(THREE.MathUtils.lerp(a.player.vx,p.vx,t),THREE.MathUtils.lerp(a.player.vz,p.vz,t)),motion.grounded,motion.gliding,motion.sliding,reducedMotion.matches,current?.status==='paused');
     }
     if(current)art.update(current,now/1000,reducedMotion.matches);renderer.render(scene,camera);
   }
