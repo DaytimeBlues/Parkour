@@ -45,3 +45,36 @@ roughly five sends per second with p95 send gaps at most 280 ms. Worker wall tim
 alone is not browser round-trip time. If latency remains too high, isolate host,
 network and database costs before considering a separately tested protocol redesign.
 Do not widen prediction or credit limits merely to hide the hold counter.
+
+## Render application timing
+
+Successful `/api/multiplayer/sync` replies include `Server-Timing: app;dur=…`
+(milliseconds). The interval starts after the request body has arrived and the
+Fetch Request has been constructed, then includes principal lookup, route work,
+SQLite operations, snapshot creation and response serialization. It ends before
+writing the socket. It does not include upstream proxy queues, request upload,
+network transit, browser work or socket delivery. It is elapsed application time,
+not CPU time and not a database-only measurement.
+
+Only a constant metric name and numeric duration are exposed. Teacher sign-in,
+rejected requests and other routes do not publish timing. No credentials, room
+codes, nicknames, query text or player identities are added, no telemetry is sent
+to another service, and no cross-origin timing permission is enabled. The metric
+uses a separate monotonic clock and cannot alter the simulation clock or credit.
+
+The fast eight-client fixture reports `diagnostics.syncApplicationMs`; the slow
+fixture reports `syncApplicationP95Ms` and its sample count per client, alongside
+existing request durations. Both require a valid timing sample for successful sync
+responses. These loopback samples are not evidence of hosted performance. The
+slow fixture intentionally injects network delay, so low application time there
+must not be described as eliminating prediction holds.
+
+On an approved deployment, compare the browser request's elapsed time with its
+application duration in the Network panel. A large difference identifies time
+outside this measured application interval, not necessarily pure network latency.
+Collect distributions and hold transitions across eight sessions before choosing
+a transport or protocol redesign. The historical 512–955 ms Worker wall-time
+sample came from the older Cloudflare deployment, not the Node/SQLite Render host.
+
+Header syntax follows the [W3C Server Timing specification](https://www.w3.org/TR/server-timing/).
+This is diagnostic instrumentation, not a fix for sustained network latency.

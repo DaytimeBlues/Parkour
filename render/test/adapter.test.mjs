@@ -6,7 +6,7 @@ const secrets={alpha:'a'.repeat(48),beta:'b'.repeat(48)}; // Synthetic tests, ne
 const teachers=()=>configuredTeachers(JSON.stringify(secrets));
 async function fixture(t,options={}){
  let handler;const server=createServer({maxHeaderSize:16384},(req,res)=>handler(req,res));server.listen(0,'127.0.0.1');await once(server,'listening');const origin=`http://127.0.0.1:${server.address().port}`,db=new NodeDatabase();let now=1000;const dir=mkdtempSync(path.join(tmpdir(),'parkour-test-'));mkdirSync(path.join(dir,'game'));writeFileSync(path.join(dir,'game','index.html'),'fixture');
- handler=createHandler({origin,teachers:options.disabled?new Map():teachers(),db,clock:()=>now,publicDir:dir});t.after(async()=>{server.closeAllConnections();await new Promise(r=>server.close(r));db.close();rmSync(dir,{recursive:true,force:true});});
+ handler=createHandler({origin,teachers:options.disabled?new Map():teachers(),db,clock:()=>now,publicDir:dir,timingClock:options.timingClock});t.after(async()=>{server.closeAllConnections();await new Promise(r=>server.close(r));db.close();rmSync(dir,{recursive:true,force:true});});
  const call=(route,body,cookie,seat,extra={})=>fetch(origin+route,{method:body===undefined?'GET':'POST',redirect:'manual',headers:{Origin:origin,'Content-Type':'application/json','X-Skybound-Wire':'3',...(cookie?{Cookie:cookie}:{}),...(seat?{'X-Skybound-Seat':seat}:{}),...extra},...(body===undefined?{}:{body:JSON.stringify(body)})});
  const login=async(id='alpha')=>{const response=await fetch(origin+'/teacher/login',{method:'POST',redirect:'manual',headers:{Origin:origin,'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({teacher:id,secret:secrets[id]})});assert.equal(response.status,303);return response.headers.get('set-cookie').split(';')[0];};
  return{origin,db,dir,call,login,setNow:v=>{now=v;}};
@@ -89,4 +89,28 @@ test('cross-site origin metadata, unauthorized logout/control and leaderboard co
  const logout=await fetch(f.origin+'/teacher/logout',{method:'POST',redirect:'manual',headers:{Cookie:cookie}});assert.equal(logout.status,403);assert.equal((await(await f.call('/api/multiplayer/me',undefined,cookie)).json()).signedIn,true);
  const room=await(await f.call('/api/multiplayer/rooms',{},cookie)).json();const control={code:room.code,action:'start',revision:0,operationId:crypto.randomUUID()};assert.equal((await f.call('/api/multiplayer/control',control)).status,401);assert.equal((await f.call('/api/multiplayer/control',control,cookie,null,{Origin:''})).status,403);
  const first=await f.call('/api/session',{});assert.equal(first.status,200);const boardCookie=first.headers.get('set-cookie');assert.ok(boardCookie.includes('HttpOnly'));const identity=await first.json();const next=await(await f.call('/api/session',{},boardCookie.split(';')[0])).json();assert.equal(next.alias,identity.alias);assert.equal((await(await f.call('/api/multiplayer/me',undefined,boardCookie.split(';')[0])).json()).signedIn,false);
+});
+
+
+test('sync response reports only aggregate app duration, not account or seat data',async t=>{
+ let tick=0;const f=await fixture(t,{timingClock:()=>{const value=tick;tick+=12.375;return value;}}),cookie=await f.login();
+ const created=await(await f.call('/api/multiplayer/rooms',{durationSeconds:300},cookie)).json();
+ const seat=await(await f.call('/api/multiplayer/join',{code:created.code,nickname:'Timing fixture',joinKey:'c'.repeat(64)})).json();
+ const baseline=await(await f.call('/api/multiplayer/state',{code:created.code},null,seat.seatToken)).json();
+ const reply=await f.call('/api/multiplayer/sync',{code:created.code,epoch:decodeRoom(baseline.room).epoch,sequence:1,frames:[]},null,seat.seatToken);
+ assert.equal(reply.status,200);assert.equal(reply.headers.get('server-timing'),'app;dur=12.38');
+ assert.equal(reply.headers.get('timing-allow-origin'),null);assert.match(reply.headers.get('cache-control'),/(?:^|,\s*)no-store(?:,|$)/);
+ const body=await reply.json();assert.equal(body.ack,1);assert.equal(body.playerId,seat.playerId);
+ for(const route of ['/teacher','/healthz','/game/','/api/multiplayer/me'])assert.equal((await f.call(route)).headers.get('server-timing'),null);
+ const denied=await f.call('/api/multiplayer/sync',{code:created.code,epoch:1,sequence:2,frames:[]});
+ assert.equal(denied.status,401);assert.equal(denied.headers.get('server-timing'),null);
+});
+
+for(const invalid of [NaN,Infinity,-1])test(`invalid diagnostic duration ${invalid} cannot break sync`,async t=>{
+ let tick=0;const f=await fixture(t,{timingClock:()=>tick++%2===0?0:invalid}),cookie=await f.login();
+ const room=await(await f.call('/api/multiplayer/rooms',{durationSeconds:300},cookie)).json();
+ const seat=await(await f.call('/api/multiplayer/join',{code:room.code,nickname:'Timing fixture',joinKey:'d'.repeat(64)})).json();
+ const baseline=await(await f.call('/api/multiplayer/state',{code:room.code},null,seat.seatToken)).json();
+ const reply=await f.call('/api/multiplayer/sync',{code:room.code,epoch:decodeRoom(baseline.room).epoch,sequence:1,frames:[]},null,seat.seatToken);
+ assert.equal(reply.status,200);assert.equal((await reply.json()).ack,1);assert.equal(reply.headers.get('server-timing'),null);
 });

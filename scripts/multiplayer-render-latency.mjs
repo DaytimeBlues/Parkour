@@ -33,7 +33,7 @@ try{
  await control('start');
  const delays=[600,660,700,740,800,900,700,620];
  for(let i=0;i<8;i++){
-  const m={index:i,sends:[],acks:[],requestMs:[],status:{},maxInflight:0,inflight:0,maxQueued:0,holds:0,releaseSignals:0,unexpectedFreezes:0,reconnects:0,states:0,lostAck:false,retriedIdentically:false,stalled:false,suspension:false,removed:false};metrics.push(m);let syncs=0,lostBody=null;
+  const m={index:i,sends:[],acks:[],requestMs:[],status:{},syncAppMs:[],invalidTimingSamples:0,maxInflight:0,inflight:0,maxQueued:0,holds:0,releaseSignals:0,unexpectedFreezes:0,reconnects:0,states:0,lostAck:false,retriedIdentically:false,stalled:false,suspension:false,removed:false};metrics.push(m);let syncs=0,lostBody=null;
   const c=new MultiplayerClient(seats[i],async(path,init)=>{
    const endpoint=path.split('/').at(-1),at=performance.now();m.inflight++;m.maxInflight=Math.max(m.maxInflight,m.inflight);if(endpoint==='reconnect')m.reconnects++;if(endpoint==='state')m.states++;
    const elapsed=at-start;let delay=delays[(syncs+i)%delays.length];
@@ -41,7 +41,7 @@ try{
    const stall=i===2&&endpoint==='sync'&&!m.stalled&&elapsed>durationSeconds*200;
    if(stall){m.stalled=true;delay=2600;events.push({action:'request-stall',client:i,atMs:elapsed});}
    try{
-    await sleep(delay/2);const result=await call(endpoint,JSON.parse(init.body),seats[i].seatToken);await sleep(delay/2);
+    await sleep(delay/2);const result=await call(endpoint,JSON.parse(init.body),seats[i].seatToken);if(endpoint==='sync'&&result.ok){const match=/^app;dur=(\d+(?:\.\d+)?)$/.exec(result.headers.get('server-timing')??'');if(match&&Number.isFinite(Number(match[1])))m.syncAppMs.push(Number(match[1]));else m.invalidTimingSamples++;}await sleep(delay/2);
     if(!result.ok)events.push({action:'http-rejection',client:i,endpoint,status:result.status,error:(await result.clone().json()).error,atMs:performance.now()-start});
     m.status[result.status]=(m.status[result.status]??0)+1;m.requestMs.push({endpoint,elapsedMs:performance.now()-at,stall});
     if(i===1&&endpoint==='sync'&&!m.lostAck&&elapsed>durationSeconds*80&&result.ok){m.lostAck=true;lostBody=init.body;events.push({action:'lost-ack-after-commit',client:i,atMs:performance.now()-start});throw new TypeError('synthetic lost acknowledgment after server commit');}
@@ -66,9 +66,9 @@ try{
  const p95=a=>{const b=[...a].sort((x,y)=>x-y);return b[Math.floor(b.length*.95)]??0;};
  const results=clients.map((c,i)=>{
   const m=metrics[i],normal=m.requestMs.filter(x=>!x.stall),gaps=m.sends.slice(1).map((x,j)=>x-m.sends[j]);
-  return{client:i,ack:c.ack,roomStatus:c.room.status,needsReconnect:c.needsReconnect,maxQueuedFrames:m.maxQueued,maxInflight:m.maxInflight,minSendGapMs:Math.min(...gaps),requestP95Ms:p95(normal.map(x=>x.elapsedMs)),normalSyncCount:normal.filter(x=>x.endpoint==='sync').length,statuses:m.status,predictionHoldSignals:m.holds,discardedPredictionFrames:c.discardedPredictionFrames,releaseSignals:m.releaseSignals,unexpectedFreezes:m.unexpectedFreezes,reconnects:m.reconnects,stateReads:m.states,lostAck:m.lostAck,retriedIdentically:m.retriedIdentically,stalled:m.stalled,suspended:m.suspension};
+  return{client:i,ack:c.ack,roomStatus:c.room.status,needsReconnect:c.needsReconnect,maxQueuedFrames:m.maxQueued,maxInflight:m.maxInflight,minSendGapMs:Math.min(...gaps),requestP95Ms:p95(normal.map(x=>x.elapsedMs)),syncApplicationP95Ms:p95(m.syncAppMs),syncApplicationSamples:m.syncAppMs.length,invalidTimingSamples:m.invalidTimingSamples,normalSyncCount:normal.filter(x=>x.endpoint==='sync').length,statuses:m.status,predictionHoldSignals:m.holds,discardedPredictionFrames:c.discardedPredictionFrames,releaseSignals:m.releaseSignals,unexpectedFreezes:m.unexpectedFreezes,reconnects:m.reconnects,stateReads:m.states,lostAck:m.lostAck,retriedIdentically:m.retriedIdentically,stalled:m.stalled,suspended:m.suspension};
  });
  const removedClient=clients[7],beforeRemoved=metrics[7].reconnects;await removedClient.recover();
- const pass=events.every(e=>e.action!=='event-error')&&removed&&events.some(e=>e.action==='pause')&&events.some(e=>e.action==='resume')&&events.some(e=>e.action==='end')&&results.every(r=>r.maxQueuedFrames<=60&&r.maxInflight===1&&r.minSendGapMs>=199.999&&r.requestP95Ms<=950&&r.normalSyncCount>=durationSeconds*.75&&r.unexpectedFreezes===0&&(r.client===7?r.needsReconnect:r.roomStatus==='ended'&&!r.needsReconnect))&&metrics[1].retriedIdentically&&metrics[2].stalled&&metrics[3].reconnects>=1&&metrics[7].reconnects===beforeRemoved;
+ const pass=events.every(e=>e.action!=='event-error')&&removed&&events.some(e=>e.action==='pause')&&events.some(e=>e.action==='resume')&&events.some(e=>e.action==='end')&&results.every(r=>r.invalidTimingSamples===0&&r.maxQueuedFrames<=60&&r.maxInflight===1&&r.minSendGapMs>=199.999&&r.requestP95Ms<=950&&r.normalSyncCount>=durationSeconds*.75&&r.unexpectedFreezes===0&&(r.client===7?r.needsReconnect:r.roomStatus==='ended'&&!r.needsReconnect))&&metrics[1].retriedIdentically&&metrics[2].stalled&&metrics[3].reconnects>=1&&metrics[7].reconnects===beforeRemoved;
  console.log(JSON.stringify({pass,durationSeconds,players:8,evidence:'Actual loopback HTTP, production Node handler/SQLite, real synthetic teacher form login, production clients/driver; 600..900ms deterministic jitter centered near700ms; lost ACK immutable retry,2600ms request stall,tab suspension/reconnect,pause/resume,revocation/end. No browser/GPU or deployed service claim. Fast4.7Hz/p95<=280ms acceptance remains separate and unchanged.',sourceSha256,events,results}));if(!pass)process.exitCode=1;
 }finally{clearInterval(predictionTimer);timers.forEach(clearTimeout);drivers.forEach(d=>d.stop());await Promise.allSettled(drivers.map(d=>d.whenIdle()));clients.forEach(c=>c.dispose());http.closeAllConnections();await new Promise(r=>http.close(r));db.close();}

@@ -1,4 +1,5 @@
 import {createServer} from 'node:http';
+import {performance} from 'node:perf_hooks';
 import {readFile,realpath,stat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -13,7 +14,7 @@ function send(res,status,body='',extra={}){res.writeHead(status,{...headers,...e
 function error(res,status,code){send(res,status,JSON.stringify({error:code}),{'Content-Type':'application/json'});}
 function body(req){return new Promise((resolve,reject)=>{let size=0,failed=false;const chunks=[];req.on('data',chunk=>{size+=chunk.length;if(size>12288){if(!failed){failed=true;reject(Object.assign(Error('body limit'),{status:413}));}return;}if(!failed)chunks.push(chunk);});req.on('end',()=>{if(!failed)resolve(Buffer.concat(chunks));});req.on('error',reject);req.on('aborted',()=>reject(Error('aborted')));});}
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.glb':'model/gltf-binary','.wasm':'application/wasm','.svg':'image/svg+xml','.png':'image/png','.txt':'text/plain; charset=utf-8'};
-export function createHandler({origin,teachers=new Map(),db,publicDir=path.join(root,'.render-build'),clock=Date.now}){
+export function createHandler({origin,teachers=new Map(),db,publicDir=path.join(root,'.render-build'),clock=Date.now,timingClock=()=>performance.now()}){
  configuredOrigin(origin);const auth=createTeacherAuth({origin,teachers,clock});
  return async(req,res)=>{
   try{
@@ -37,9 +38,16 @@ export function createHandler({origin,teachers=new Map(),db,publicDir=path.join(
      if(result.error)return error(res,result.status,result.error);
      return send(res,303,'',{'Set-Cookie':result.cookie,Location:pathname==='/teacher/login'?'/game/multiplayer/':'/teacher'});
     }
+    const startedAt=timingClock();
     const response=pathname.startsWith('/api/multiplayer/')?await handleMultiplayer(request,db,{principal:auth.principal(request),now:clock()}):await handleLeaderboard(request,db,clock());
     const extra=Object.fromEntries(response.headers);const cookies=response.headers.getSetCookie();if(cookies.length)extra['set-cookie']=cookies;
-    return send(res,response.status,Buffer.from(await response.arrayBuffer()),extra);
+    const payload=Buffer.from(await response.arrayBuffer());
+    // Aggregate application time only, from dispatch through serialization.
+    // Excludes body upload, proxy/network transit and socket delivery. No IDs,
+    // SQL details, credentials or cross-origin timing permission are exposed.
+    const elapsed=timingClock()-startedAt;
+    if(pathname==='/api/multiplayer/sync'&&response.ok&&Number.isFinite(elapsed)&&elapsed>=0)extra['Server-Timing']=`app;dur=${elapsed.toFixed(2)}`;
+    return send(res,response.status,payload,extra);
    }
    if(!['GET','HEAD'].includes(req.method))return error(res,405,'METHOD_NOT_ALLOWED');
    if(!pathname.startsWith('/game/')&&!pathname.startsWith('/licenses/'))return error(res,404,'NOT_FOUND');
