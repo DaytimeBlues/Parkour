@@ -23,7 +23,9 @@ export function createHandler({origin,teachers=new Map(),db,publicDir=path.join(
    const url=new URL(req.url,origin);
    if(pathname==='/healthz'&&req.method==='GET')return send(res,200,'ok',{'Content-Type':'text/plain'});
    if(['/','/game','/game/multiplayer','/signin-with-chatgpt'].includes(pathname)&&req.method==='GET')return send(res,303,'',{Location:pathname==='/signin-with-chatgpt'?'/teacher':pathname==='/game/multiplayer'?'/game/multiplayer/':'/game/'});
-   if(pathname==='/teacher'&&req.method==='GET')return send(res,auth.enabled?200:503,auth.enabled?form:form.replace('<form method="post" action="/teacher/login">','<p><strong>Teacher access is disabled until the operator configures named teachers.</strong></p><form hidden method="post" action="/teacher/login">'),{'Content-Type':'text/html; charset=utf-8'});
+   // no-referrer makes native form POSTs send Origin: null. Preserve the
+   // same-origin header for CSRF checks, without disclosing cross-site referrers.
+   if(pathname==='/teacher'&&req.method==='GET')return send(res,auth.enabled?200:503,auth.enabled?form:form.replace('<form method="post" action="/teacher/login">','<p><strong>Teacher access is disabled until the operator configures named teachers.</strong></p><form hidden method="post" action="/teacher/login">'),{'Content-Type':'text/html; charset=utf-8','Referrer-Policy':'same-origin'});
    if(pathname.startsWith('/api/')||pathname==='/teacher/login'||pathname==='/teacher/logout'){
     if(!['GET','POST'].includes(req.method))return error(res,405,'METHOD_NOT_ALLOWED');
     const bytes=req.method==='POST'?await body(req):undefined;

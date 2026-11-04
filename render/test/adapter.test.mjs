@@ -42,6 +42,20 @@ test('teacher form enforces own origin, exact fields, logout and fixed redirects
  const logout=await fetch(f.origin+'/teacher/logout',{method:'POST',redirect:'manual',headers:{Origin:f.origin,Cookie:c}});assert.equal(logout.status,303);assert.equal(logout.headers.get('location'),'/teacher');assert.equal((await(await f.call('/api/multiplayer/me',undefined,c)).json()).signedIn,false);
  const redirect=await fetch(f.origin+'/signin-with-chatgpt?return_to=https://evil.test',{redirect:'manual'});assert.equal(redirect.headers.get('location'),'/teacher');
 });
+test('teacher form preserves same-origin POST origin without cross-site referrer disclosure',async t=>{
+ const f=await fixture(t),page=await f.call('/teacher');
+ assert.equal(page.headers.get('referrer-policy'),'same-origin');
+ assert.equal((await f.call('/game/')).headers.get('referrer-policy'),'no-referrer');
+ for(const origin of ['', 'null', 'https://other.test']){
+  for(const route of ['/teacher/login','/teacher/logout']){
+   const r=await fetch(f.origin+route,{method:'POST',headers:{Origin:origin,'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({teacher:'alpha',secret:secrets.alpha})});
+   assert.equal(r.status,403);assert.equal((await r.json()).error,'ORIGIN_REJECTED');
+  }
+ }
+ const c=await f.login();assert.equal((await(await f.call('/api/multiplayer/me',undefined,c)).json()).signedIn,true);
+ const logout=await fetch(f.origin+'/teacher/logout',{method:'POST',redirect:'manual',headers:{Origin:f.origin,Cookie:c}});
+ assert.equal(logout.status,303);assert.equal((await(await f.call('/api/multiplayer/me',undefined,c)).json()).signedIn,false);
+});
 test('sessions use secure bounded rotating credentials; expiry and duplicates rejected',()=>{
  let now=0;const origin='https://test.example',auth=createTeacherAuth({origin,teachers:teachers(),clock:()=>now});
  const request=cookie=>new Request(origin+'/teacher/login',{method:'POST',headers:{Origin:origin,...(cookie?{Cookie:cookie}:{})}}),form=()=>new URLSearchParams({teacher:'alpha',secret:secrets.alpha});
