@@ -50,7 +50,7 @@ for(const mode of['stale-epoch','stale-version','stale-time','stale-ack','ack-se
  if(mode==='stale-epoch')state.epoch=2;if(mode==='stale-version')state.version=7;if(mode==='stale-time')state.snapshotMs=900;
  if(mode==='stale-ack'){state.players[0].seq=3;ack=3;}if(mode==='ack-sequence')ack=5;if(mode==='wrong-player')playerId='other';if(mode==='wrong-room')state.code='OTHER';if(mode==='removed')state.players[0].active=false;
  const c=new MultiplayerClient(seat,async(path)=>{if(path.endsWith('/sync'))return tooFast();stateReads++;if(mode==='forbidden')return new Response(JSON.stringify({error:'SEAT_REMOVED'}),{status:403});if(mode==='malformed-wire')return new Response(JSON.stringify({room:{wireVersion:999},ack:4,playerId:'p1'}));return reply(state,ack,playerId);},()=>now);c.accept(baseline,4,true);c.predict(move);const pose=structuredClone(c.predicted);now=200;await c.pump();
- assert.equal(c.needsReconnect,true);assert.equal(c.ack,4);assert.equal(c.room.version,8);assert.deepEqual(c.predicted,pose);assert.equal(c.budgetRebases,0);c.predict({...move,jump:true});assert.deepEqual(c.predicted,pose);if(mode==='forbidden'){now=30000;await c.recover();assert.equal(stateReads,1);}c.dispose();
+ assert.equal(c.needsReconnect,true);assert.equal(c.ack,4);assert.equal(c.room.version,8);assert.deepEqual(c.predicted,mode==='forbidden'?null:pose);assert.equal(c.budgetRebases,0);c.predict({...move,jump:true});assert.deepEqual(c.predicted,mode==='forbidden'?null:pose);if(mode==='forbidden'){now=30000;await c.recover();assert.equal(stateReads,1);}c.dispose();
 });
 
 test('disposed generation ignores successful delayed timing baseline, including callback and hold mutation',async()=>{

@@ -1,7 +1,7 @@
 /** Shared browser/fixture driver. Deadlines follow actual send starts, never
  * response completion +200ms or a queue of missed polling slots. */
 type PumpClient = {
-  lastAttempt: number; busy: boolean; needsReconnect: boolean;
+  lastAttempt: number; busy: boolean; needsReconnect: boolean; membershipIssue?: string | null;
   room: { status: string } | null; pump(): Promise<void>; recover?(): Promise<void>;
 };
 type Timing = {
@@ -30,6 +30,7 @@ export function createPumpDriver(getClient: () => PumpClient | null, enabled: ()
     if (stopped || owner !== generation) return;
     const client = getClient(), now = clock();
     timing.onWake?.(now);
+    if (client?.membershipIssue) return; // A new client/view must explicitly wake us.
     if (!enabled() || !client || !client.room || client.room.status === 'ended') { arm(200, owner); return; }
     if (client.needsReconnect) {
       try { await client.recover?.(); }
@@ -41,6 +42,7 @@ export function createPumpDriver(getClient: () => PumpClient | null, enabled: ()
         }
         return;
       }
+      if (client.membershipIssue) return;
       arm(client.needsReconnect ? 200 : client.lastAttempt + 200 - clock(), owner); return;
     }
     // A manual reconnect or another explicit owner may be busy. Do not spin on
@@ -53,6 +55,7 @@ export function createPumpDriver(getClient: () => PumpClient | null, enabled: ()
     // wake()/stop() invalidates an old client's continuation; replacing a view
     // must not wait for an obsolete request or let it re-arm the new driver.
     const current = getClient();
+    if (current?.membershipIssue) return;
     arm(current ? current.lastAttempt + 200 - clock() : 200, owner);
   }
   function wake() { if (stopped) return; generation++; arm(1, generation); }

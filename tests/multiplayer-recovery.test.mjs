@@ -109,8 +109,8 @@ test('late reconnect rejection after recovery deadline preserves the terminal ti
  const f=await fixture(t),c=f.client;t.after(()=>c.dispose());f.setNow(2400);await c.pump();let reject,calls=0;c.fetcher=async()=>{calls++;return await new Promise((_,r)=>reject=r);};f.setNow(2600);const task=c.recover();while(!reject)await new Promise(r=>setImmediate(r));f.setNow(12401);c.predict(move);const message=c.message;reject(new TypeError('late offline rejection'));await task;assert.equal(c.message,message);assert.match(message,/timed out/);f.setNow(30000);await c.recover();assert.equal(calls,1);assert.equal(c.recovering,false);assert.equal(c.needsReconnect,true);
 });
 
-test('explicit manual retry after terminal recovery failure starts fresh, never revives the old deadline',async t=>{
- const f=await fixture(t),c=f.client;t.after(()=>c.dispose());const original=c.fetcher;f.setNow(2400);await c.pump();c.fetcher=async()=>new Response(JSON.stringify({error:'SEAT_REMOVED'}),{status:403});f.setNow(2600);await c.recover();assert.equal(c.recovering,false);assert.equal(c.needsReconnect,true);
+test('explicit manual retry after a non-membership recovery failure starts fresh, never revives the old deadline',async t=>{
+ const f=await fixture(t),c=f.client;t.after(()=>c.dispose());const original=c.fetcher;f.setNow(2400);await c.pump();c.fetcher=async()=>new Response(JSON.stringify({error:'INVALID_AUTHORITATIVE_BASELINE'}),{status:409});f.setNow(2600);await c.recover();assert.equal(c.recovering,false);assert.equal(c.needsReconnect,true);
  c.fetcher=original;f.setNow(30000);await c.reconnect();assert.equal(c.needsReconnect,false);assert.equal(c.recovering,false);c.predict(move);assert.equal(c.needsReconnect,false);assert.equal(c.pending.length,1);
 });
 

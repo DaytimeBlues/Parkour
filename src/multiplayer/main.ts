@@ -1,3 +1,4 @@
+import {forgetMatchingSeat, membershipNotice} from './membership.ts';
 import {createMenuSteps} from '../ui/menu-steps';
 import {loadAppearance} from '../simulation/appearance.ts';
 import {validAppearance} from '../../shared/appearance.mjs';
@@ -25,11 +26,12 @@ function saveSeat(seat:Seat){try{sessionStorage.setItem(STORAGE,JSON.stringify(s
 function locked(){return graphicsAvailable&&!!graphics&&document.pointerLockElement===graphics.canvas;}
 function clearInput(){keys.clear();jump=false;}
 function release(){clearInput();if(document.pointerLockElement)document.exitPointerLock();}
-function beginView(code:string|null){const ticket=view.begin(code);release();graphics?.clear();appearanceWarning='';client?.dispose();client=null;teacher=false;teacherBusy=false;room=null;previousEpoch=-1;entry.hidden=false;roomPanel.hidden=true;hud.hidden=true;lobby.hidden=false;$('score').hidden=true;$('menu-button').hidden=true;return ticket;}
+function beginView(code:string|null){const ticket=view.begin(code);release();graphics?.clear();appearanceWarning='';client?.dispose();client=null;teacher=false;teacherBusy=false;room=null;previousEpoch=-1;entry.hidden=false;roomPanel.hidden=true;hud.hidden=true;$('membership-panel').hidden=true;lobby.hidden=false;$('score').hidden=true;$('menu-button').hidden=true;return ticket;}
 function format(ms:number){const seconds=Math.max(0,Math.ceil(ms/1000));return `${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;}
 function own(){return client?.predicted??null;}
 const symbols:Record<string,string>={circle:'●',square:'■',diamond:'◆',triangle:'▲',pentagon:'⬟'};
 function displayRoom(value:Room){
+  if(client?.membershipIssue){displayMembershipIssue();return;}
   if(room&&room.code===value.code&&(value.epoch<room.epoch||value.epoch===room.epoch&&((value.snapshotMs??value.serverTime)<(room.snapshotMs??room.serverTime)||value.version<room.version)))return;
   room=value;entry.hidden=true;roomPanel.hidden=false;$('score').hidden=false;$('menu-button').hidden=false;
   if(previousEpoch!==room.epoch){previousEpoch=room.epoch;clearInput();if(client?.predicted)yaw=client.predicted.yaw;}
@@ -52,19 +54,32 @@ function displayRoom(value:Room){
   updateConnectionMessage();if(client?.needsReconnect&&!client.recovering){release();say(client.message);}
   hud.hidden=!locked();lobby.hidden=locked();
 }
+function displayMembershipIssue(){
+  if(!client?.membershipIssue)return;
+  release();graphics?.clear();room=null;rosterKey='';
+  try{forgetMatchingSeat(sessionStorage,STORAGE,client.seat);}catch{} // Storage may be disabled.
+  const detail=membershipNotice(client.membershipIssue);
+  $('membership-title').textContent=detail.title;$('membership-message').textContent=detail.message;
+  entry.hidden=true;roomPanel.hidden=true;$('membership-panel').hidden=false;lobby.hidden=false;hud.hidden=true;
+  $('score').hidden=true;$('menu-button').hidden=true;play.hidden=true;reconnect.hidden=true;
+  $('roster').replaceChildren();$('zone-list').replaceChildren();$('player-count').textContent='';
+  $('restore').hidden=true;say(detail.message);updateConnectionMessage();updateConnectionDetails();
+}
+$('membership-back').onclick=()=>{beginView(null);entrySteps.show('role');say('Ask your teacher for a room code before joining again.');};
 function updateConnectionMessage(){
  const message=[client?.message,appearanceWarning].filter(Boolean).join(' · '),target=$('connection');
  if(target.textContent!==message)target.textContent=message;
 }
 function updateConnectionDetails(){
  const target=$('connection-details');
+ if(client?.membershipIssue){target.textContent='This runner connection has ended. No movement or reconnect requests will be sent.';return;}
  if(!client){target.textContent=teacher?'Teacher room view. No runner connection is active.':'No runner connection.';return;}
  const age=Math.max(0,Math.floor((performance.now()-client.lastGood)/1000));
  const state=client.recovering?'Reconnecting automatically':client.needsReconnect?'Reconnect needed':client.predictionHeld?'Waiting for the server':'Connected';
  target.textContent=`${state}. Last accepted update ${age}s ago. ${client.busy?'Request in progress.':'No request waiting.'} Queued movement: ${client.pending.length}. Accepted batch: ${client.ack}. ${client.message}`;
 }
 function useClient(seat:Seat,value?:Room){
-  client?.dispose();teacher=false;const next=new MultiplayerClient(seat,fetch,()=>performance.now(),()=>{if(client===next&&next.room&&view.capture().code===seat.code)displayRoom(next.room);});client=next;previousEpoch=-1;
+  client?.dispose();teacher=false;const next=new MultiplayerClient(seat,fetch,()=>performance.now(),()=>{if(client!==next||view.capture().code!==seat.code)return;if(next.membershipIssue)displayMembershipIssue();else if(next.room)displayRoom(next.room);});client=next;previousEpoch=-1;
   if(value)client.accept(value,value.players.find(p=>p.id===seat.playerId)?.seq??0,true);
   saveSeat(seat);network.wake();
 }
@@ -97,8 +112,8 @@ $('lock').onclick=()=>void control('lock',{locked:!room?.locked});
 play.onclick=async()=>{if(!graphicsAvailable||!graphics||!client||client.needsReconnect||client.recovering||room?.status!=='running')return;try{await graphics.canvas.requestPointerLock();graphics.canvas.focus({preventScroll:true});}catch{say('Mouse capture was blocked. Click Enter Fortress again in this game tab.');}};
 $('menu-button').onclick=release;
 $('leave').onclick=()=>{beginView(null);entrySteps.show('role');$('restore').hidden=!savedSeat();say('Left this view. A saved runner seat can reconnect from this tab.');void loadTeacherRooms();};
-reconnect.onclick=async()=>{if(!client)return;const current=client,ticket=view.begin(current.seat.code);reconnect.disabled=true;try{await current.reconnect();if(view.accepts(ticket)&&client===current){network.wake();say(current.needsReconnect||current.recovering?current.message:'Reconnected to the current server state. Enter the fortress when ready.');}}catch(e){if(view.accepts(ticket))say(readable(e));}finally{if(view.accepts(ticket))reconnect.disabled=false;}};
-$('restore').onclick=async()=>{const seat=savedSeat();if(!seat)return;const ticket=beginView(seat.code);useClient(seat);const current=client!;try{await current.reconnect();if(view.accepts(ticket)&&client===current)say(current.needsReconnect||current.recovering?current.message:'Saved seat reconnected.');}catch(e){if(view.accepts(ticket))say(readable(e));}};
+reconnect.onclick=async()=>{if(!client)return;const current=client,ticket=view.begin(current.seat.code);reconnect.disabled=true;try{await current.reconnect();if(view.accepts(ticket)&&client===current){network.wake();say(current.needsReconnect||current.recovering?current.message:'Reconnected to the current server state. Enter the fortress when ready.');}}catch(e){if(view.accepts(ticket))say(current.membershipIssue?current.message:readable(e));}finally{if(view.accepts(ticket))reconnect.disabled=false;}};
+$('restore').onclick=async()=>{const seat=savedSeat();if(!seat)return;const ticket=beginView(seat.code);useClient(seat);const current=client!;try{await current.reconnect();if(view.accepts(ticket)&&client===current)say(current.needsReconnect||current.recovering?current.message:'Saved seat reconnected.');}catch(e){if(view.accepts(ticket))say(current.membershipIssue?current.message:readable(e));}};
 document.addEventListener('pointerlockchange',()=>{clearInput();lobby.hidden=locked();hud.hidden=!locked();if(locked())graphics?.canvas.focus({preventScroll:true});});
 document.addEventListener('pointerlockerror',()=>say('Mouse capture failed. Click Enter Fortress to retry.'));
 document.addEventListener('mousemove',event=>{if(!locked()||room?.status!=='running')return;yaw=Math.atan2(Math.sin(yaw-event.movementX*.0023),Math.cos(yaw-event.movementX*.0023));pitch=Math.max(-1.35,Math.min(1.35,pitch-event.movementY*.0023));});

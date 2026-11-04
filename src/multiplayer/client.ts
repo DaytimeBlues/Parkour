@@ -1,3 +1,4 @@
+import {membershipIssueFor, membershipNotice, type MembershipIssue} from './membership.ts';
 import { decodeRoom } from '../../shared/multiplayer-wire.mjs';
 import { createPlayer, stepPlayer } from '../../shared/multiplayer.mjs';
 
@@ -45,6 +46,21 @@ export class MultiplayerClient {
   lastAttempt = -Infinity;
   needsReconnect = false;
   message = '';
+  membershipIssue: MembershipIssue | null = null;
+  private endMembership(issue: MembershipIssue) {
+    if (this.membershipIssue) return;
+    this.membershipIssue = issue; this.generation++; this.suspensionRevision++;
+    this.autoRecovery = false; this.recoveryDeadline = 0; this.needsReconnect = true;
+    this.predictionHeld = false; this.predicted = null;
+    this.discardedPredictionFrames += this.pending.length + (this.batch?.frames.length ?? 0);
+    this.pending = []; this.batch = null;
+    this.message = membershipNotice(issue).message;
+  }
+  private rejectMembership(error: unknown) {
+    const issue = membershipIssueFor(error);
+    if (!issue) return false;
+    this.endMembership(issue); return true;
+  }
   private generation = 0;
   private autoRecovery = true;
   private recoveryAfter = 0;
@@ -72,6 +88,7 @@ export class MultiplayerClient {
   seat: Seat; private fetcher: typeof fetch; private clock: () => number; changed: () => void;
   constructor(seat: Seat, fetcher: typeof fetch = fetch, clock: () => number = () => performance.now(), changed: () => void = () => {}) { this.seat=seat;this.fetcher=fetcher;this.clock=clock;this.changed=changed; }
   accept(room: Room, ack: number, initial = false, notify = true, pendingLimit = Infinity): boolean {
+    if (this.membershipIssue) return false;
     if (!Number.isSafeInteger(ack) || ack < 0 || ack > 1000000) return false;
     if (room.code !== this.seat.code) return false;
     if (room.viewerPlayerId !== undefined && room.viewerPlayerId !== this.seat.playerId) { this.autoRecovery=false; this.needsReconnect=true; this.message='Seat identity changed or was removed. Reconnect before moving.'; if (notify) this.changed(); return false; }
@@ -88,7 +105,7 @@ export class MultiplayerClient {
       this.pending.splice(0, this.pending.length - pendingLimit);
     }
     const own = room.players.find(p => p.id === this.seat.playerId);
-    if (!own || own.active === false) { this.predicted = null; this.autoRecovery = false; this.needsReconnect = true; this.message = 'This seat was removed. Ask your teacher before joining again.'; }
+    if (!own || own.active === false) { this.endMembership('seat-removed'); }
     else {
       this.predicted = structuredClone(own);
       for (const frame of this.pending) stepPlayer(this.predicted, frame, 1 / 60);
@@ -126,6 +143,9 @@ export class MultiplayerClient {
       if (!this.accept(reply.room, reply.ack, false, false, 30)) throw new NetworkError(409, 'INVALID_AUTHORITATIVE_BASELINE');
       this.batch = null; this.predictionHeld = false; this.recoveryDeadline = 0; this.message = ''; this.changed();
     } catch (error) {
+      // A definitive rejection may tighten a timeout/suspension, but never an
+      // obsolete client generation. Unlike a success it cannot revive access.
+      if (generation === this.generation && this.rejectMembership(error)) { this.changed(); return; }
       if (generation !== this.generation || suspension !== this.suspensionRevision || this.expireRecovery()) return;
       if (error instanceof NetworkError && error.status === 409 && error.message === 'INPUT_TOO_FAST') {
         // This explicit rejection applied no movement. Read a fresh authorised
@@ -146,6 +166,7 @@ export class MultiplayerClient {
           this.batch = null; this.predictionHeld = false; this.lastAttempt = startedAt; this.budgetRebases++;
           this.message = 'Movement timing resynchronized. Delayed inputs were discarded.';
         } catch (baselineError) {
+          if (generation === this.generation && this.rejectMembership(baselineError)) { this.changed(); return; }
           if (generation !== this.generation || suspension !== this.suspensionRevision || this.expireRecovery()) return;
           this.needsReconnect = true;
           if (terminalProtocolError(baselineError) || baselineError instanceof NetworkError && [400,401,403,404,409,410].includes(baselineError.status)) { this.autoRecovery = false; this.recoveryDeadline = 0; }
@@ -167,7 +188,7 @@ export class MultiplayerClient {
           // Notify only the validated final state. A slow state read already
           // satisfied the send spacing; do not add another receive-time delay.
           this.predictionHeld = false; this.lastAttempt = startedAt; this.changed();
-        } catch (baselineError) { if(generation===this.generation && suspension===this.suspensionRevision && !this.expireRecovery()){this.needsReconnect=true; if(terminalProtocolError(baselineError) || baselineError instanceof NetworkError && [400,401,403,404,409,410].includes(baselineError.status)){this.autoRecovery=false;this.recoveryDeadline=0;} this.message='Match changed while offline. Reconnect before moving.'; this.changed();} }
+        } catch (baselineError) { if(generation===this.generation && this.rejectMembership(baselineError)){this.changed();return;}if(generation===this.generation && suspension===this.suspensionRevision && !this.expireRecovery()){this.needsReconnect=true; if(terminalProtocolError(baselineError) || baselineError instanceof NetworkError && [400,401,403,404,409,410].includes(baselineError.status)){this.autoRecovery=false;this.recoveryDeadline=0;} this.message='Match changed while offline. Reconnect before moving.'; this.changed();} }
         return;
       }
       this.message = error instanceof NetworkError ? error.message.replaceAll('_', ' ') : 'Connection delayed — retrying the same input batch.';
@@ -181,11 +202,11 @@ export class MultiplayerClient {
         if (this.autoRecovery) this.requireRecovery();
       } else if (this.clock() - this.lastGood > 1000) this.requireRecovery();
       this.changed();
-    } finally { if (generation === this.generation) this.busy = false; }
+    } finally { if (generation === this.generation || this.membershipIssue) this.busy = false; }
   }
   /** Freeze/discard old inputs on tab suspension; resume from server authority. */
   suspend() {
-    if (!this.room || this.room.status === 'ended') return;
+    if (this.membershipIssue || !this.room || this.room.status === 'ended') return;
     this.suspensionRevision++; this.recoveryDeadline = 0;
     this.pending=[]; this.needsReconnect=true;
     this.message='Connection paused. Reconnecting when this tab is active.'; this.changed();
@@ -204,6 +225,7 @@ export class MultiplayerClient {
     }
   }
   reconnect(automatic = false): Promise<void> {
+    if (this.membershipIssue) return Promise.resolve();
     if(this.reconnectTask)return this.reconnectTask;
     // A user's explicit retry starts a new lifecycle, not the exhausted budget
     // of an earlier automatic attempt. Automatic retries never extend it.
@@ -230,13 +252,14 @@ export class MultiplayerClient {
       this.batch = null; this.predictionHeld = this.recovering; this.needsReconnect = false; this.autoRecovery = true;
       this.message = this.recovering ? 'Reconnecting — checking live room. Movement paused.' : '';
     } catch (error) {
+      if (generation === this.generation && this.rejectMembership(error)) { this.changed(); throw error; }
       if (generation === this.generation && suspension === this.suspensionRevision && !this.expireRecovery()) {
         if (error instanceof NetworkError && [400,401,403,404,409,410].includes(error.status) || terminalProtocolError(error)) { this.autoRecovery = false; this.recoveryDeadline = 0; }
         this.message = error instanceof Error ? error.message.replaceAll('_', ' ') : 'Reconnect failed';
       }
       throw error;
     }
-    finally { if(generation===this.generation){this.busy = false; this.changed();} }
+    finally { if(generation===this.generation || this.membershipIssue){this.busy = false; this.changed();} }
   }
   dispose() { this.autoRecovery=false; this.generation++; this.needsReconnect = true; this.pending = []; this.batch = null; }
 }

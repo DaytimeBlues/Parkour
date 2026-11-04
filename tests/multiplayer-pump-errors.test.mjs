@@ -29,3 +29,11 @@ test('stopped recovery work does not emit a late error or rearm timers',async()=
  timers.fire();driver.stop();rejectRecovery(new Error('request failed after stop'));await driver.whenIdle();
  assert.equal(errors.length,0);assert.equal(timers.callbacks.size,0);
 });
+test('permanent membership ends timer churn until an explicit newer view wakes the driver',async()=>{
+ const timers=scheduler();let calls=0,client={...ready(),membershipIssue:null,async pump(){calls++;this.membershipIssue='seat-removed';this.needsReconnect=true;}};
+ const driver=createPumpDriver(()=>client,()=>true,{...timers,clock:()=>1000});timers.fire();await driver.whenIdle();assert.equal(calls,1);assert.equal(timers.callbacks.size,0);
+ driver.wake();timers.fire();await driver.whenIdle();assert.equal(timers.callbacks.size,0);assert.equal(calls,1);
+ client={...ready(),async pump(){calls++;}};driver.wake();timers.fire();await driver.whenIdle();assert.equal(calls,2);assert.equal(timers.callbacks.size,1);driver.stop();
+});
+test('membership revoked by automatic recovery does not rearm the driver',async()=>{const timers=scheduler();const client={...ready(),needsReconnect:true,async recover(){this.membershipIssue='seat-removed';}};const driver=createPumpDriver(()=>client,()=>true,{...timers,clock:()=>1000});timers.fire();await driver.whenIdle();assert.equal(timers.callbacks.size,0);driver.stop();});
+for(const state of ['restored','ended','hidden'])test(`permanent ${state} client stops all timer churn before ordinary idle conditions`,async()=>{const timers=scheduler(),client={...ready(),membershipIssue:'seat-removed',room:state==='restored'?null:{status:state==='ended'?'ended':'running'}};const driver=createPumpDriver(()=>client,()=>state!=='hidden',{...timers,clock:()=>1000});timers.fire();await driver.whenIdle();assert.equal(timers.callbacks.size,0);driver.stop();});
