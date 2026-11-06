@@ -14,7 +14,8 @@ export function courseTokens(course:Course):Token[]{
   // Finish triggers on entering its platform, so don't leave a coin beyond that boundary.
   if(platform.goal||named.id==='catch'||named.id==='catch-step')return;
   const shortcut=named.id==='garden-shortcut';
-  tokens.push({id:`${course.id}:${index}:route`,platform,offsetX:0,offsetZ:index===0?-1.8:0,value:shortcut?50:10});
+  const offset=named.id?(course as Course&{tokenOffsets?:Record<string,{x:number;z:number}>}).tokenOffsets?.[named.id]:undefined;
+  tokens.push({id:`${course.id}:${index}:route`,platform,offsetX:offset?.x??0,offsetZ:offset?.z??(index===0?-1.8:0),value:shortcut?50:10});
   // Optional side detours cost time and ask the player to approach an outer edge.
   // They never add jumps, collision or a requirement to complete the speed route.
   if(platform.checkpoint){tokens.push({id:`${course.id}:${index}:bonus`,platform,offsetX:(index%2?1:-1)*(platform.w/2-.75),offsetZ:platform.d/2-.85,value:50});}

@@ -66,7 +66,7 @@
       <details class="how-to"><summary>How to play</summary><div>
         <p>Stand in a flag zone with more teammates than opponents. Hold it for five seconds to capture it.</p>
         <p>Captured zones earn points. The team with the most points when time runs out wins.</p>
-        <dl class="key-guide"><div><dt>WASD / arrows</dt><dd>Move</dd></div><div><dt>Mouse</dt><dd>Look</dd></div><div><dt>Space</dt><dd>Jump · hold to glide</dd></div><div><dt>C</dt><dd>Crouch</dd></div><div><dt>Esc</dt><dd>Room menu</dd></div></dl>
+        <dl class="key-guide"><div><dt>WASD / arrows</dt><dd>Move</dd></div><div><dt>Mouse</dt><dd>Look</dd></div><div><dt>Space</dt><dd>Jump · hold airborne to glide</dd></div><div><dt>C</dt><dd>Crouch</dd></div><div><dt>Esc</dt><dd>Room menu</dd></div></dl>
       </div></details>
       </section>
 
@@ -80,7 +80,7 @@
         </div>
         <div class="roster-heading"><h2>Players</h2><span id="player-count"></span></div>
         <div id="roster" aria-label="Room players"></div>
-        <details class="room-help"><summary>Controls and room help</summary><div><p>WASD or arrows to move. Space to jump; hold to glide. C to crouch. Esc opens this menu.</p><p>Your teacher starts and pauses the match. Leaving this view stops your movement; you can return with your saved seat.</p></div></details>
+        <details class="room-help"><summary>Controls and room help</summary><div><p>WASD or arrows to move. Space to jump; hold anywhere airborne to glide. Release to descend faster. Launch pads and updrafts add height. C to crouch. Esc opens this menu.</p><p>Your teacher starts and pauses the match. Leaving this view stops your movement; you can return with your saved seat.</p></div></details>
         <details class="connection-details"><summary>Connection details</summary><p id="connection-details" aria-live="off"></p><p>These are live connection checks, not a speed test. No sign-in details are shown.</p></details>
         <button id="leave" class="text-button">Leave room view</button>
       </section>
@@ -99,7 +99,7 @@
     <div id="zone-list" aria-label="Zone ownership and capture"></div>
     <div class="radar-wrap"><canvas id="radar" width="240" height="240" aria-label="Radar shows flag zones and teammates only"></canvas><small>Zones &amp; teammates</small></div>
     <div id="crosshair" aria-hidden="true">+</div>
-    <div class="controls"><span><kbd>WASD</kbd> / <kbd>↑↓←→</kbd> Move</span><span><kbd>Space</kbd> Jump / glide</span><span><kbd>C</kbd> Crouch</span><span><kbd>Esc</kbd> Menu</span></div>
+    <div class="controls"><span><kbd>WASD</kbd> / <kbd>↑↓←→</kbd> Move</span><span><kbd>Space</kbd> Jump / hold airborne to glide</span><span><kbd>C</kbd> Crouch</span><span><kbd>Esc</kbd> Menu</span></div>
   </aside>
   <div id="connection" role="status" aria-live="polite"></div>
   <script type="module" src="/src/multiplayer/main.ts"></script>

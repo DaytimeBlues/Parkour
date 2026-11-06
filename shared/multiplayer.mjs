@@ -91,13 +91,16 @@ export function stepPlayer(p, input, dt = STEP) {
       p.vy = pad.lift; p.grounded = false; p.glideRemaining = 5;
     }
   }
-  p.gliding = !!input.glide && !p.grounded && p.glideRemaining > 0;
+  // Location-independent descending glide. The old pad timer now controls
+  // boosted-glide usage only; ordinary jumps never gain pad momentum.
+  p.gliding = !!input.glide && !p.grounded;
+  const boostedGlide = p.gliding && p.glideRemaining > 0;
   if (p.gliding) p.glideRemaining = Math.max(0, p.glideRemaining - dt);
   p.vy -= PLAYER.gravity * dt;
   if (p.gliding && p.vy < -2.4) p.vy = -2.4;
   let f = input.forward, r = input.right; const norm = Math.hypot(f, r);
   if (norm > 1) { f /= norm; r /= norm; }
-  const speed = p.gliding ? 12 : p.sliding ? 6 : PLAYER.speed;
+  const speed = boostedGlide ? 12 : p.sliding ? 6 : PLAYER.speed;
   p.vx = (Math.cos(p.yaw) * r - Math.sin(p.yaw) * f) * speed;
   p.vz = (-Math.sin(p.yaw) * r - Math.cos(p.yaw) * f) * speed;
   moveHorizontal(p, 'x', p.vx * dt, height); moveHorizontal(p, 'z', p.vz * dt, height);

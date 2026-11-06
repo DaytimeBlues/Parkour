@@ -247,3 +247,16 @@ test('all five Flow course rules require four ordered checkpoints before finish'
 
 test('Flow II and Flow I boards stay separate; older in-flight tickets still finish without rewriting records',async t=>{const f=fixture(t),s1=await f.session(),s2=await f.session(),old=await f.run(s1.cookie,{courseId:'daybreak-flow-v1'}),modern=await f.run(s2.cookie,{courseId:'daybreak-flow-v2'});assert.equal((await f.call('/api/runs',{cookie:s2.cookie,body:{courseId:'daybreak-flow-v2',rulesVersion:'flow-v1',idempotencyKey:crypto.randomUUID()}})).status,400);await f.finish(s1.cookie,old);await f.finish(s2.cookie,modern);assert.equal((await f.board('daybreak-flow-v1')).body.entries.length,1);assert.equal((await f.board('daybreak-flow-v2')).body.entries.length,1);assert.equal((await f.board('daybreak')).body.entries.length,0);assert.equal(f.db.sqlite.prepare('SELECT rules_version FROM lb_runs WHERE id=?').get(old.runId).rules_version,'flow-v1');});
 test('all five Flow II rules still require four ordered checkpoints',async t=>{const f=fixture(t);for(const courseId of Object.keys(COURSE_RULES).filter(id=>id.endsWith('-flow-v2'))){const s=await f.session(),r=await f.run(s.cookie,{courseId});assert.equal((await f.event(s.cookie,r.runId,1,'finish')).status,409);await f.finish(s.cookie,r);assert.equal((await f.board(courseId)).body.entries.length,1);}});
+
+test('map-wide glide aliases have isolated boards and permit old Flow tickets to finish unchanged',async t=>{
+ const f=fixture(t);
+ for(const base of ['daybreak','sundown','storm','aurora','relay-gardens-v1'])for(const version of [1,2]){
+  const oldId=`${base}-flow-v${version}`,newId=`${oldId}-glide-v1`,oldSession=await f.session(),newSession=await f.session();
+  const oldRun=await f.run(oldSession.cookie,{courseId:oldId}),newRun=await f.run(newSession.cookie,{courseId:newId});
+  assert.equal(newRun.rulesVersion,'mapwide-glide-v1');assert.equal(oldRun.rulesVersion,`flow-v${version}`);
+  assert.equal((await f.call('/api/runs',{cookie:newSession.cookie,body:{courseId:newId,rulesVersion:`flow-v${version}`,idempotencyKey:crypto.randomUUID()}})).status,400);
+  await f.finish(oldSession.cookie,oldRun);assert.equal((await f.board(oldId)).body.entries.length,1);assert.equal((await f.board(newId)).body.entries.length,0);
+  await f.finish(newSession.cookie,newRun);assert.equal((await f.board(oldId)).body.entries.length,1);assert.equal((await f.board(newId)).body.entries.length,1);
+  assert.equal(f.db.sqlite.prepare('SELECT rules_version FROM lb_runs WHERE id=?').get(oldRun.runId).rules_version,`flow-v${version}`);
+ }
+});

@@ -1,4 +1,4 @@
-export const rankingRules=(courseId:string)=>courseId.endsWith('-flow-v2')?'flow-v2':courseId.endsWith('-flow-v1')?'flow-v1':courseId==='relay-gardens-v1'?'relay-gardens-v1-be1290f':'vertical-v1';
+export const rankingRules=(courseId:string)=>/-flow-v[12]-glide-v1$/.test(courseId)?'mapwide-glide-v1':courseId.endsWith('-flow-v2')?'flow-v2':courseId.endsWith('-flow-v1')?'flow-v1':courseId==='relay-gardens-v1'?'relay-gardens-v1-be1290f':'vertical-v1';
 export type RankedEvent={sequence:number;kind:'checkpoint'|'relay'|'fall'|'finish'|'abandon';checkpoint?:number;relay?:number};
 export type RunTicket={runId:string;startedMs:number;expiresMs:number;alias:string};
 type Fetcher=(url:string,init?:RequestInit)=>Promise<Response>;

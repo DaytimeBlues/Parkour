@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {AppearanceAssets, wingAnimator, avatarAnimator, type AppearanceModel} from '../render/appearance-assets.ts';
 import {validAppearance, type Appearance} from '../../shared/appearance.mjs';
 import type {Team} from './client.ts';
+import {createTeamGroundRings} from '../render/team-ground-ring.ts';
 
 export const REMOTE_AVATAR_BUDGET=Object.freeze({entries:32,templates:8,drawCallsPerAvatar:36,batchedDrawCallsPerAvatar:26,optimizedDrawCallsPerAvatar:24,trianglesPerAvatar:5600});
 
@@ -12,21 +13,20 @@ export const REMOTE_AVATAR_BUDGET=Object.freeze({entries:32,templates:8,drawCall
  */
 export function appearanceFactory(assets:AppearanceAssets, onError:()=>void=()=>{}) {
   const entries=new Set<ReturnType<typeof create>>();
-  const markerGeometry={red:new THREE.ConeGeometry(1,1,3),blue:new THREE.BoxGeometry(1,1,1)};
-  const markerMaterial={red:new THREE.MeshLambertMaterial({color:0xef675d}),blue:new THREE.MeshLambertMaterial({color:0x50b8f5})};
+  const teamRings=createTeamGroundRings();
   let disposed=false;
   function create(team:Team, value:unknown) {
     if(disposed||entries.size>=REMOTE_AVATAR_BUDGET.entries)throw new Error('Remote avatar capacity exceeded');
     const appearance:Appearance=validAppearance(value),root=new THREE.Group(),body=new THREE.Group();
     root.name=`remote-${appearance.character}-${appearance.wing}`;root.userData.appearance={...appearance};root.userData.assetState='loading';root.add(body);
-    const badge=new THREE.Mesh(markerGeometry[team],markerMaterial[team]);badge.name=team==='red'?'triangle-team-marker':'square-team-marker';badge.position.y=2.3;badge.scale.set(.3,.3,.15);root.add(badge);
+    const badge=teamRings.create(team);root.add(badge);
     let released=false,character:AppearanceModel|undefined,wing:AppearanceModel|undefined,bodyAnimation:ReturnType<typeof avatarAnimator>|undefined,wingAnimation:ReturnType<typeof wingAnimator>|undefined;
     let posed=false,crouchScale=.35,poseState={time:0,speed:0,grounded:true,gliding:false,sliding:false,reducedMotion:false,paused:false};
     function pose(time:number,speed:number,grounded:boolean,gliding:boolean,sliding:boolean,reducedMotion=false,paused=false){
       poseState={time,speed,grounded,gliding,sliding,reducedMotion,paused};
       if(!character||!bodyAnimation||!wingAnimation||!wing)return;
       const sampled=bodyAnimation.sample(poseState);if(paused&&posed)return;
-      posed=true;body.scale.y=sliding?crouchScale:1;badge.visible=!sliding;root.userData.animation={...sampled};
+      posed=true;body.scale.y=sliding?crouchScale:1;root.userData.animation={...sampled};
       wing.root.visible=gliding&&!sliding;wingAnimation.setFlight(gliding&&!sliding?1:0,sampled.time,reducedMotion);
     }
     function dispose(){if(released)return;released=true;entries.delete(entry);bodyAnimation?.dispose();wingAnimation?.dispose();if(!wingAnimation)wing?.dispose();if(!bodyAnimation)character?.dispose();root.removeFromParent();root.clear();}
@@ -44,5 +44,5 @@ export function appearanceFactory(assets:AppearanceAssets, onError:()=>void=()=>
     })();
     return entry;
   }
-  return{create,get size(){return entries.size;},async dispose(){if(disposed)return;disposed=true;for(const entry of [...entries])entry.dispose();Object.values(markerGeometry).forEach(g=>g.dispose());Object.values(markerMaterial).forEach(m=>m.dispose());await assets.dispose();}};
+  return{create,get size(){return entries.size;},async dispose(){if(disposed)return;disposed=true;for(const entry of [...entries])entry.dispose();teamRings.dispose();await assets.dispose();}};
 }

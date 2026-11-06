@@ -8,6 +8,7 @@ export const POLICY = Object.freeze({ bodyBytes: 2048, sessionMs: DAY, runMs: 30
 export const COOKIE_NAME = '__Host-skybound_session';
 const DEV_COOKIE_NAME = 'skybound_session_dev';
 export const COURSE_RULES = Object.freeze(Object.fromEntries([
+  ...['daybreak','sundown','storm','aurora','relay-gardens-v1'].flatMap(id=>[1,2].map(v=>[`${id}-flow-v${v}-glide-v1`,Object.freeze({version:'mapwide-glide-v1',milestones:Object.freeze(['checkpoint:1','checkpoint:2','checkpoint:3','checkpoint:4'])})])),
   ...['daybreak','sundown','storm','aurora','relay-gardens-v1'].map(id=>[`${id}-flow-v2`,Object.freeze({version:'flow-v2',milestones:Object.freeze(['checkpoint:1','checkpoint:2','checkpoint:3','checkpoint:4'])})]),
   ...['daybreak','sundown','storm','aurora','relay-gardens-v1'].map(id=>[`${id}-flow-v1`,Object.freeze({version:'flow-v1',milestones:Object.freeze(['checkpoint:1','checkpoint:2','checkpoint:3','checkpoint:4'])})]),
   ...['daybreak', 'sundown', 'storm', 'aurora'].map(id => [id, Object.freeze({ version: 'vertical-v1', milestones: Object.freeze(['checkpoint:1', 'checkpoint:2', 'checkpoint:3', 'checkpoint:4', 'checkpoint:5']) })]),
