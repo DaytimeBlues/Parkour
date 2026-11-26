@@ -1,0 +1,5 @@
+## Fox Run preview credits
+- Godot Engine 4.7.2 stable: MIT and third-party component notices. The build copies unmodified LICENSE.txt and COPYRIGHT.txt from the SHA-256-pinned official 4.7.2 source release into the runtime image. Browser recipients can read the corresponding notices at https://godotengine.org/license/ and https://github.com/godotengine/godot/blob/4.7.2-stable/COPYRIGHT.txt.
+- Fox and Deer original animated models by Quaternius, Ultimate Animated Animal Pack, CC0 1.0: https://quaternius.com/packs/ultimateanimatedanimals.html and https://creativecommons.org/publicdomain/zero/1.0/. Deer redistribution here is limited to compiled game resources. Source, editable original files and asset packs are excluded from the publication staging.
+- ws 8.21.0, MIT. The unmodified official dependency tar and standalone licence are in vendor/; the installed MIT file remains in the runtime image.
+- Woodland route geometry, articulated Angel, and project UI/logic are project-owned. No third-party premium shader, raw models or editable asset files are authorized by this staging.

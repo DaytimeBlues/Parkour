@@ -1,0 +1,43 @@
+:root {
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+  color: #edf2e4;
+  background: #161f1c;
+  --panel: #26342c;
+  --accent: #d8e7a7;
+  --line: #65756a;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+[hidden] { display: none !important; }
+a { color: var(--accent); }
+header { min-height: 3.5rem; padding: .75rem clamp(1rem, 4vw, 3rem); border-bottom: 1px solid var(--line); }
+header, nav, .room-header, fieldset, #host { display: flex; align-items: center; gap: 1rem; }
+header, .room-header { justify-content: space-between; }
+.brand { font-family: Georgia, serif; font-size: 1.5rem; text-decoration: none; }
+.brand span { font: 600 .85rem system-ui, sans-serif; color: #b4c7b6; margin-left: .2rem; }
+[aria-current="page"] { font-weight: 750; }
+main { width: min(100% - 2rem, 76rem); margin: 1.25rem auto; }
+h1, h2, p, ul { margin: 0 0 .7rem; }
+h1 { font: 600 2rem Georgia, serif; }
+h2 { font-size: 1.05rem; }
+form, aside { background: var(--panel); border: 1px solid var(--line); border-radius: .75rem; padding: 1rem; }
+main > form { max-width: 27rem; margin: 1rem auto; display: grid; gap: .75rem; }
+label:has(input:not([type="radio"])) { display: grid; gap: .3rem; }
+input:not([type="radio"]) { min-height: 2.45rem; width: 100%; padding: .35rem .5rem; border-radius: .3rem; border: 1px solid var(--line); background: #18241f; color: inherit; font: inherit; }
+fieldset { border: 1px solid var(--line); border-radius: .35rem; padding: .45rem .65rem; margin: 0; }
+button { min-height: 2.5rem; padding: .45rem .8rem; border: 1px solid transparent; border-radius: .35rem; background: var(--accent); color: #152015; font: 700 1rem system-ui, sans-serif; cursor: pointer; }
+button.secondary { background: transparent; color: inherit; border-color: var(--line); }
+button:disabled { opacity: .55; cursor: default; }
+:focus-visible { outline: 3px solid #f1c480; outline-offset: 3px; }
+#error { color: #ffccb3; }
+#status:empty, #result:empty, #presence:empty { display: none; }
+.room-header { align-items: baseline; border-bottom: 1px solid var(--line); margin: 1rem 0; }
+.room-header strong { color: var(--accent); letter-spacing: .12em; }
+.room-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem); gap: 1rem; align-items: start; }
+#roster, #bases { list-style: none; padding: 0; }
+#roster li, #bases li { padding: .45rem 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+progress { width: 100%; accent-color: var(--accent); }
+#teacher-seat { width: fit-content; display: flex; align-items: end; gap: .7rem; margin-bottom: .7rem; }
+#host-controls, #game-panel, #leave { margin-bottom: .85rem; }
+#game-mount iframe { width: 100%; aspect-ratio: 16/9; border: 1px solid var(--line); display: block; margin-top: .65rem; background: #101613; }

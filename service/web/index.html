@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fox Run Classroom</title>
+  <link rel="stylesheet" href="/classroom.css">
+  <script type="module" src="/classroom.mjs"></script>
+</head>
+<body>
+  <header>
+    <a href="/" class="brand">Fox Run <span>Classroom</span></a>
+    <nav aria-label="Entry">
+      <a href="/" id="student-link">Student</a>
+      <a href="/teacher" id="teacher-link">Teacher</a>
+    </nav>
+  </header>
+  <main>
+    <p id="status" role="status" aria-live="polite"></p>
+    <p id="error" role="alert" hidden></p>
+    <form id="join" hidden>
+      <h1>Join a room</h1>
+      <label>Room code <input name="code" required maxlength="6" autocomplete="off" autocapitalize="characters" pattern="[a-zA-Z0-9]{6}"></label>
+      <label id="nickname-label">Nickname <input name="nickname" aria-describedby="nickname-note" required maxlength="20" autocomplete="off" placeholder="e.g. Fern"></label>
+      <small id="nickname-note">Choose a nickname without your real name.</small>
+      <fieldset><legend>Choose an animal</legend>
+        <label><input type="radio" name="species" value="fox" checked> Fox</label>
+        <label><input type="radio" name="species" value="deer"> Deer</label>
+      </fieldset>
+      <button type="submit">Join room</button>
+    </form>
+    <form id="login" hidden>
+      <h1>Teacher sign-in</h1>
+      <label>Username <input name="username" autocomplete="username" required></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+      <button type="submit">Sign in</button>
+    </form>
+    <section id="host" hidden>
+      <button id="create" type="button">Create room</button>
+      <button id="sign-out" class="secondary" type="button">Sign out</button>
+    </section>
+    <section id="room" aria-labelledby="room-heading" hidden>
+      <div class="room-header">
+        <h1 id="room-heading">Room <strong id="room-code"></strong></h1>
+        <p id="phase"></p>
+        <button id="copy-code" class="secondary" type="button">Copy code</button>
+      </div>
+      <div class="room-content">
+        <div>
+          <section id="host-controls" hidden>
+            <form id="teacher-seat">
+              <fieldset><legend>Play as</legend>
+                <label><input type="radio" name="species" value="fox" checked> Fox</label>
+                <label><input type="radio" name="species" value="deer"> Deer</label>
+              </fieldset>
+              <button type="submit">Take a seat</button>
+            </form>
+            <button id="start" type="button" disabled>Start match</button>
+            <button id="close-room" class="secondary" type="button" disabled>Close room</button>
+          </section>
+          <section id="game-panel" hidden>
+            <p id="game-status" role="status"></p>
+            <button id="focus-game" type="button" hidden>Focus game controls</button>
+            <div id="game-mount"></div>
+          </section>
+          <p id="result" role="status"></p>
+        </div>
+        <aside aria-label="Room and match status">
+          <h2 id="roster-heading">Players</h2>
+          <p id="presence" role="status" aria-live="polite"></p>
+          <ul id="roster"></ul>
+          <section id="match" hidden>
+            <h2>Bases</h2>
+            <p id="clock"></p>
+            <ul id="bases"></ul>
+          </section>
+        </aside>
+      </div>
+      <button id="leave" class="secondary" type="button">Leave room</button>
+    </section>
+  </main>
+</body>
+</html>

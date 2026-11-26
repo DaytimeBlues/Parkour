@@ -1,0 +1,11 @@
+{
+  "version": "fox-run-classroom-v1",
+  "mapId": "fox-woodland-seven-stage-draft-a85c2974e2ee",
+  "scope": "public-fox-deer-preview-v1",
+  "sha256": {
+    "index.html": "afc6f7e94c07d7257e4578ad39228ffe0b9bf2fd441e13659b83e38bf06d3776",
+    "index.js": "33c94cb3175f3333b82e2a3be5e8e86f77986f0aa2042b1631f6367a4e5bb6ba",
+    "index.wasm": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0",
+    "index.pck": "0fae3a43729e0d06af9ac5451a2820bec902ecae1f645899b60792e17572dc17"
+  }
+}
