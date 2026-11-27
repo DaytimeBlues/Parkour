@@ -20,6 +20,7 @@
     <p id="error" role="alert" hidden></p>
     <form id="join" hidden>
       <h1>Join a room</h1>
+      <p class="entry-note">Use the code your teacher gives you.</p>
       <label>Room code <input name="code" required maxlength="6" autocomplete="off" autocapitalize="characters" pattern="[a-zA-Z0-9]{6}"></label>
       <label id="nickname-label">Nickname <input name="nickname" aria-describedby="nickname-note" required maxlength="20" autocomplete="off" placeholder="e.g. Fern"></label>
       <small id="nickname-note">Choose a nickname without your real name.</small>
@@ -35,6 +36,7 @@
       <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
       <button type="submit">Sign in</button>
     </form>
+    <div class="entry-plate" aria-hidden="true"></div>
     <section id="host" hidden>
       <button id="create" type="button">Create room</button>
       <button id="sign-out" class="secondary" type="button">Sign out</button>
@@ -66,14 +68,14 @@
           <p id="result" role="status"></p>
         </div>
         <aside aria-label="Room and match status">
-          <h2 id="roster-heading">Players</h2>
-          <p id="presence" role="status" aria-live="polite"></p>
-          <ul id="roster"></ul>
           <section id="match" hidden>
             <h2>Bases</h2>
             <p id="clock"></p>
             <ul id="bases"></ul>
           </section>
+          <h2 id="roster-heading">Players</h2>
+          <p id="presence" role="status" aria-live="polite"></p>
+          <ul id="roster"></ul>
         </aside>
       </div>
       <button id="leave" class="secondary" type="button">Leave room</button>
