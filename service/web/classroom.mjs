@@ -20,6 +20,10 @@ let gameMap = null;
 let gameTimer = null;
 let lastIntent = null;
 let lastRendered = '';
+let lastBasesRendered = '';
+const BASE_LABELS = new Map([
+  ['base_root_walk', 'Root Walk'], ['base_bridge_far', 'Bridge Lookout'], ['base_canopy_fork', 'Canopy Fork']
+]);
 let pendingJoin = null;
 let knownPresence = new Map();
 let phaseWas = '';
@@ -246,6 +250,7 @@ function leave() {
   recovering = false;
   waitingForState = true;
   phaseWas = '';
+  lastBasesRendered = '';
   pendingJoin = null;
   knownPresence.clear();
   view.presence.textContent = '';
@@ -257,7 +262,7 @@ function leave() {
   frame?.remove();
   frame = null;
   entry();
-  if (teacherPage) (signedIn ? view.create : view.login.querySelector('input')).focus();
+  if (teacherPage) (publicPreview || signedIn ? view.create : view.login.querySelector('input')).focus();
   else view.join.querySelector('input').focus();
 }
 
@@ -273,7 +278,12 @@ function render() {
   view['teacher-seat'].hidden = Boolean(admission?.seatToken) || state?.room.phase !== 'lobby';
   if (!state) return;
   const { room, match, interrupted } = state;
-  view.phase.textContent = { lobby: 'Waiting for teacher', running: 'Match in progress', finished: 'Match finished' }[room.phase];
+  const hasPlayer = room.seats.some(s => s.connected);
+  const lobbyHint = teacherPage
+    ? (hasPlayer ? 'Ready to play. Select Start match.' : 'Share the room code, or choose Take a seat to play yourself.')
+    : 'You are in. Wait for the host to start.';
+  const phaseText = { lobby: lobbyHint, running: 'Match in progress', finished: 'Match finished' }[room.phase];
+  if (view.phase.textContent !== phaseText) view.phase.textContent = phaseText;
   view.start.textContent = room.phase === 'finished' ? 'Start rematch' : 'Start match';
   view['roster-heading'].textContent = 'Players · ' + room.seats.length + ' / ' + (state.maxSeats??8);
   const names = new Map(room.seats.map(s => [s.id, s.nickname]));
@@ -300,8 +310,17 @@ function render() {
   }
   if (match) {
     const remaining = Math.ceil(match.remainingSeconds);
-    view.clock.textContent = 'Time left ' + Math.floor(remaining / 60) + ':' + String(remaining % 60).padStart(2, '0');
-    view.bases.replaceChildren(...match.bases.map(base => baseLine(base, names)));
+    const clockText = 'Time left ' + Math.floor(remaining / 60) + ':' + String(remaining % 60).padStart(2, '0');
+    if (view.clock.textContent !== clockText) view.clock.textContent = clockText;
+    const shapes = match.bases.map(base => [
+      BASE_LABELS.get(base.id) ?? base.id, names.get(base.owner) ?? 'Unclaimed', base.contested,
+      base.claimant ? names.get(base.claimant) ?? 'Player' : '', base.claimant ? Math.round(base.progress * 100) : 0
+    ]);
+    const key = JSON.stringify(shapes);
+    if (key !== lastBasesRendered) {
+      lastBasesRendered = key;
+      view.bases.replaceChildren(...shapes.map(baseLine));
+    }
   }
   const result = interrupted ? 'The match was interrupted. The teacher can start a rematch.' :
     match?.finished && match.leaders.length
@@ -317,15 +336,14 @@ function render() {
   phaseWas = room.phase;
 }
 
-function baseLine(base, names) {
+function baseLine([label, owner, contested, claimant, percent]) {
   const item = document.createElement('li');
-  const owner = names.get(base.owner) || 'Unclaimed';
-  item.textContent = base.id + ' · ' + owner + (base.contested ? ' · Contested' : '');
-  if (base.claimant) {
+  item.textContent = label + ' · ' + owner + (contested ? ' · Contested' : '');
+  if (claimant) {
     const progress = document.createElement('progress');
-    progress.max = 1;
-    progress.value = base.progress;
-    progress.setAttribute('aria-label', base.id + ' capture by ' + names.get(base.claimant));
+    progress.max = 100;
+    progress.value = percent;
+    progress.setAttribute('aria-label', label + ' capture by ' + claimant);
     item.append(progress);
   }
   return item;

@@ -63,7 +63,7 @@ export function gateRenderRequest(contract, req, {upgrade=false}={}) {
   if (!['GET','HEAD'].includes(req.method)) reject('Unsupported method',405);
   if (raw==='/' || raw==='/teacher' || raw==='/classroom.mjs' || raw==='/classroom.css') return 'lobby';
   if (raw==='/health') return 'health';
-  if (/^\/play\/(?:index\.(?:html|js|pck|wasm))?$/.test(raw)) return 'protected-asset';
+  if (/^\/play\/(?:index\.(?:html|js|pck|wasm|audio\.(?:worklet|position\.worklet)\.js))?$/.test(raw)) return 'protected-asset';
   reject('Unapproved route',404);
 }
 

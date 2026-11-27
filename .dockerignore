@@ -18,6 +18,8 @@
 !public-export/fox-public-export.json
 !public-export/index.html
 !public-export/index.js
+!public-export/index.audio.worklet.js
+!public-export/index.audio.position.worklet.js
 !public-export/index.pck
 !vendor
 !vendor/ws-8.21.0.tgz

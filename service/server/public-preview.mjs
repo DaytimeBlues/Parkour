@@ -8,11 +8,11 @@ export const publicController='res://authority_smoke/controller_public.gd';
 export const publicScene='res://classroom_draft/map.tscn';
 export const godotSHA256='8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e';
 export const hostTTL=25*60*1000;
-export const assetNames=['index.html','index.js','index.wasm','index.pck'];
-const mimetypes=['text/html; charset=utf-8','text/javascript; charset=utf-8','application/wasm','application/octet-stream'];
+export const assetNames=['index.html','index.js','index.wasm','index.pck','index.audio.worklet.js','index.audio.position.worklet.js'];
+const mimetypes=['text/html; charset=utf-8','text/javascript; charset=utf-8','application/wasm','application/octet-stream','text/javascript; charset=utf-8','text/javascript; charset=utf-8'];
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const fail=(status,message='Preview unavailable')=>Object.assign(new Error(message),{status});
-const reviewedManifest='711e9dca18a6fd091090814e8816b656b24dd6f0843176d926a4019f046c0943';
+const reviewedManifest='7e43986bc6c50b55fd3f2e1d79b08c0ffac4acff2484b17872d6c81830688570';
 const reviewedAuthorityPack='676c0e00e1e2301388c5ddf8e9523c01830b1b33bf105642c8c9620348848465';
 export function renderPublicConfig(env) {
   // Expected origin + service ID are explicit operator settings, not copied from a request.
